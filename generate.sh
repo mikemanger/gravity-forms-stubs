@@ -19,6 +19,7 @@ sed -i -e 's#^\(\s*function \)\(rgar(.*\)$#\1__\2#' source/gravityforms/xml.php
 
 "$(dirname "$0")/vendor/bin/generate-stubs" \
     --force \
+    --visitor=visitor.php \
     --finder=finder.php \
     --header="$HEADER" \
     --functions \
