@@ -374,6 +374,7 @@ namespace {
          *
          * If an email field has multiple merge tags, and not all of the fields are
          * filled out, we can end up with extra commas that break the header.
+         * This method also accounts for removal of surrounding spaces.
          *
          * @since 2.8.6
          *
@@ -856,6 +857,16 @@ namespace {
         public static function get_preview_link($args = array())
         {
         }
+        /**
+         * Returns an array of file extensions with periods and spaces removed.
+         *
+         * @since unknown
+         * @since 2.9.18 Updated to support being passed a string of comma separated extensions.
+         *
+         * @param array|string $extensions The file extensions to be cleaned.
+         *
+         * @return array
+         */
         public static function clean_extensions($extensions)
         {
         }
@@ -972,6 +983,7 @@ namespace {
          * @param int    $form_id Current form id.
          * @param string $filter Name of spam filter that marked entry as spam. (i.e. Akismet or Honeypot ).
          * @param string $reason The reason this entry was flagged as spam.
+         * @phpstan-return void
          */
         public static function set_spam_filter($form_id, $filter, $reason)
         {
@@ -979,6 +991,28 @@ namespace {
         public static function spam_enabled($form_id)
         {
         }
+        /**
+         * Callback for gform_entry_is_spam; performs the Akimset spam check.
+         *
+         * @since 2.9.12 Moved to a filter callback from GFCommon::is_spam_entry().
+         *
+         * @param bool  $is_spam Indicates if the submission has been flagged as spam.
+         * @param array $form    The form currently being processed.
+         * @param array $entry   The entry currently being processed.
+         *
+         * @return bool
+         */
+        public static function entry_is_spam_akismet($is_spam, $form, $entry)
+        {
+        }
+        /**
+         * Determines if the Akismet integration is available.
+         *
+         * @since unknown
+         * @since 2.9.12 Disable the integration when the Akismet Add-On (that communicates directly with the Akismet API) is active.
+         *
+         * @return bool
+         */
         public static function has_akismet()
         {
         }
@@ -1269,6 +1303,18 @@ namespace {
         {
         }
         /**
+         * Outputs a visually hidden page header for screen readers.
+         *
+         * Retrieves the current admin page title, modifies it if needed,
+         * and echoes it inside an \<h1\> with the "screen-reader-text" class for accessibility.
+         *
+         * @since 2.9.11
+         * @return void
+         */
+        public static function admin_screen_reader_title()
+        {
+        }
+        /**
          * Display the wrapper for admin notifications.
          *
          * @since 2.5
@@ -1282,6 +1328,7 @@ namespace {
          * @since 2.5
          *
          * @return void
+         * @phpstan-return void
          */
         public static function find_admin_notices()
         {
@@ -1295,6 +1342,14 @@ namespace {
         public static function admin_notices_style()
         {
         }
+        /**
+         * Outputs the gf_vars variable if a script that requires it has been enqueued.
+         *
+         * @since unknown
+         * @since 2.9.16 Updated to use self::get_inline_script_tag().
+         *
+         * @return void
+         */
         public static function maybe_output_gf_vars()
         {
         }
@@ -1315,6 +1370,7 @@ namespace {
          * in between the dependency and this block can continue to work
          *
          * @since 2.5
+         * @phpstan-return void
          */
         public static function output_hooks_javascript()
         {
@@ -1323,10 +1379,13 @@ namespace {
          * Get the Javascript code from the gforms_hooks file and return it.
          *
          * @since 2.5
+         * @since 2.9.19 Added the $set_printed_prop param.
+         *
+         * @param bool $set_printed_prop Optional. Indicates if GFFormDisplay::$hooks_js_printed should be set to true.
          *
          * @return false|string
          */
-        public static function get_hooks_javascript_code()
+        public static function get_hooks_javascript_code($set_printed_prop = \true)
         {
         }
         /**
@@ -1397,6 +1456,7 @@ namespace {
          * @deprecated 2.6
          * @remove-in 3.0
          * @see        class-gf-config-service-provider.php::register_config_items()
+         * @phpstan-return void
          */
         public static function localize_gform_i18n()
         {
@@ -1405,6 +1465,7 @@ namespace {
          * @deprecated since 2.6
          * @remove-in 3.0
          * @see        class-gf-config-service-provider.php::register_config_items()
+         * @phpstan-return void
          */
         public static function localize_gform_gravityforms_multifile()
         {
@@ -1419,6 +1480,7 @@ namespace {
          *
          * @param string $script The handle of the script in which to localize the variable.
          *
+         * @phpstan-return void
          */
         public static function localize_legacy_check($script)
         {
@@ -1431,6 +1493,7 @@ namespace {
          * @remove-in 3.0
          * @see        class-gf-config-service-provider.php::register_config_items()
          * @see        gform_gf_legacy_multi
+         * @phpstan-return void
          */
         public static function localize_gf_legacy_multi()
         {
@@ -1724,12 +1787,13 @@ namespace {
          * @since 2.5
          * @since 2.6 Added check for icon_namespace $item check to allow for custom font icon kits.
          *
-         * @param array       $item    Array containing an "icon" property.
-         * @param string|null $default Default icon.
+         * @param array       $item        Array containing an "icon" property.
+         * @param string|null $default     Default icon.
+         * @param bool        $aria_hidden Whether to add aria-hidden attribute. Defaults to true.
          *
          * @return string|null
          */
-        public static function get_icon_markup($item, $default = \null)
+        public static function get_icon_markup($item, $default = \null, $aria_hidden = \true)
         {
         }
         /**
@@ -1884,6 +1948,7 @@ namespace {
          * @param $key
          *
          * @return string
+         * @phpstan-return void
          */
         public static function output_svg($key)
         {
@@ -1972,6 +2037,7 @@ namespace {
          * @since 2.7.1
          *
          * @param string $hook The cron hook name.
+         * @phpstan-return void
          */
         public static function record_cron_event($hook)
         {
@@ -2020,6 +2086,43 @@ namespace {
          * @return bool
          */
         public static function output_default_css()
+        {
+        }
+        /**
+         * Sends a success JSON response with a delimiter indicating the beginning and end of the JSON string.
+         *
+         * @since 2.9.16
+         *
+         * @param mixed $data The data to be sent in the JSON response.
+         *
+         * @return void
+         */
+        public static function send_json_success($data)
+        {
+        }
+        /**
+         * Sends an error JSON response with a delimiter indicating the beginning and end of the JSON string.
+         *
+         * @since 2.9.16
+         *
+         * @param mixed $data The data to be sent in the JSON response.
+         *
+         * @return void
+         */
+        public static function send_json_error($data)
+        {
+        }
+        /**
+         * Sends a JSON response with a delimiter indicating the beginning and end of the JSON string.
+         *
+         * @since 2.9.16
+         *
+         * @param array $response The response data to be sent in the JSON response.
+         *
+         * @return void
+         * @phpstan-return never
+         */
+        public static function send_json($response)
         {
         }
     }
@@ -2197,6 +2300,7 @@ namespace {
     {
         /**
          * Prepare meta boxes and screen options.
+         * @phpstan-return void
          */
         public static function add_meta_boxes()
         {
@@ -2284,6 +2388,7 @@ namespace {
          * @since 2.5
          *
          * return void
+         * @phpstan-return void
          */
         public static function redirect_on_restore()
         {
@@ -2569,12 +2674,14 @@ namespace {
          * Displays the bulk actions.
          *
          * @param string $which
+         * @phpstan-return void
          */
         function bulk_actions($which = '')
         {
         }
         /**
          * Processes a bulk or single action.
+         * @phpstan-return void
          */
         function process_action()
         {
@@ -2583,6 +2690,7 @@ namespace {
          * Displays additional fields required by FORM and displays the modals.
          *
          * @param string $which
+         * @phpstan-return void
          */
         function extra_tablenav($which)
         {
@@ -2607,6 +2715,7 @@ namespace {
     {
         /**
          * Process the forms export request.
+         * @phpstan-return void
          */
         public static function maybe_export()
         {
@@ -2755,6 +2864,7 @@ namespace {
          * Handles the export request from the export entries page.
          *
          * @since 2.0.0
+         * @phpstan-return never
          */
         public static function ajax_process_export()
         {
@@ -2774,6 +2884,7 @@ namespace {
          * @since 2.0.0
          *
          * @param $path
+         * @phpstan-return void
          */
         public static function maybe_create_htaccess_file($path)
         {
@@ -2784,6 +2895,7 @@ namespace {
          * @since 2.0.0
          *
          * @param $path
+         * @phpstan-return void
          */
         public static function maybe_create_index_file($path)
         {
@@ -2792,6 +2904,7 @@ namespace {
          * Handles the download request from the export entries page.
          *
          * @since 2.0.0
+         * @phpstan-return never
          */
         public static function ajax_download_export()
         {
@@ -2824,6 +2937,18 @@ namespace {
         {
         }
         public static function duplicate_field()
+        {
+        }
+        /*
+         * AJAX function to retrieve a form.
+         *
+         * Used by HasConditionalLogicDependencyLegwork in form_editor.js to check
+         * conditional logic dependencies for fields, confirmations, notifications,
+         * notification routing, and feeds.
+         *
+         * @since 2.9.9
+         */
+        public static function ajax_get_form()
         {
         }
         public static function change_input_type()
@@ -2938,7 +3063,11 @@ namespace {
         const SUBMISSION_METHOD_POSTBACK = 'postback';
         const SUBMISSION_METHOD_AJAX = 'ajax';
         const SUBMISSION_METHOD_IFRAME = 'iframe';
-        const SUBMISSION_METHOD_CUSTOM = 'custom';
+        const SUBMISSION_TYPE_SAVE_AND_CONTINUE = 'save-continue';
+        const SUBMISSION_TYPE_SEND_LINK = 'send-link';
+        const SUBMISSION_TYPE_SUBMIT = 'submit';
+        const SUBMISSION_TYPE_NEXT = 'next';
+        const SUBMISSION_TYPE_PREVIOUS = 'previous';
         /**
          * Starting point for the form submission process. Handles the following tasks: Form validation, save for later logic, entry creation, notification and confirmation.
          *
@@ -2947,6 +3076,7 @@ namespace {
          *
          * @param int $form_id      The form ID being submitted.
          * @param int $initiated_by What process initiated the form submission. Possible options are self::SUBMISSION_INITIATED_BY_WEBFORM = 1 or self::SUBMISSION_INITIATED_BY_API = 2.
+         * @phpstan-return void
          */
         public static function process_form($form_id, $initiated_by = self::SUBMISSION_INITIATED_BY_API)
         {
@@ -2987,6 +3117,7 @@ namespace {
          * @param  string $mode Mode to check for: 'submit' or 'render'
          *
          * @return boolean
+         * @phpstan-param 'submit'|'render' $mode
          */
         public static function is_last_page($form, $mode = 'submit')
         {
@@ -3048,6 +3179,52 @@ namespace {
          * @return mixed|string|WP_Error
          */
         public static function get_form($form_id, $display_title = \true, $display_description = \true, $force_display = \false, $field_values = \null, $ajax = \false, $tabindex = 0, $form_theme = \null, $style_settings = \null)
+        {
+        }
+        /**
+         * Get the markup for a specific page in a multipage form.
+         *
+         * @since 2.9.5
+         *
+         * @param int    $form_id            The form ID.
+         * @param int    $page_number        The page number to render.
+         * @param array  $field_values       An array of field values to populate the form with.
+         * @param string $theme              The current form theme (i.e. orbital or gravity).
+         * @param array  $style_settings     An array of block or shortcode style settings.
+         * @param string $submission_method  The submission method (i.e. ajax or postback).
+         *
+         * @return string Returns the markup for the specified page of a multipage form.
+         */
+        public static function get_page($form_id, $page_number, $field_values, $theme, $style_settings, $submission_method)
+        {
+        }
+        /**
+         * Get the markup for a colletion of fields in a form. If $page_number is specified, only the markup for the fields on that page will be returned. Otherwise, the markup for all fields in the form will be returned.
+         *
+         * @since 2.9.5
+         * @since 2.9.18 Made the honeypot the first field on the form.
+         *
+         * @param array $form             The current form object.
+         * @param array $field_values     The array of field values to populate the form with.
+         * @param array $submitted_values The array of submitted values if the form has been submitted.
+         * @param int   $page_number      The current page number to get fields for. Or 0 to get all fields.
+         *
+         * @return string Returns the markup for the specified page of a multipage form, or all fields in the form if no page number is specified.
+         */
+        public static function get_fields($form, $field_values, $submitted_values, $page_number = 0)
+        {
+        }
+        /**
+         * Gets the fields for a specific page in a form.
+         *
+         * @since 2.9.5
+         *
+         * @param array $form        The form object.
+         * @param int   $page_number The page number to get fields for.
+         *
+         * @return array Returns an array of fields belonging to the specified page.
+         */
+        public static function get_fields_by_page($form, $page_number)
         {
         }
         public static function footer_init_scripts($form_id)
@@ -3279,6 +3456,7 @@ namespace {
          *
          * @since unknown
          * @since 2.4.18 Added support for blocks and the gform_post_enqueue_scripts hook.
+         * @phpstan-return void
          */
         public static function enqueue_scripts()
         {
@@ -3291,6 +3469,7 @@ namespace {
          * @param string $post_content The post content to be parsed.
          * @param array  $found_forms  An array of found forms using the form ID as the key to the ajax status.
          * @param array  $found_blocks An array of found GF blocks.
+         * @phpstan-return void
          */
         public static function parse_forms($post_content, &$found_forms, &$found_blocks)
         {
@@ -3303,6 +3482,7 @@ namespace {
          * @param array $blocks       The blocks found in the post content.
          * @param array $found_forms  An array of found forms using the form ID as the key to the ajax status.
          * @param array $found_blocks An array of found GF blocks.
+         * @phpstan-return void
          */
         public static function parse_forms_from_blocks($blocks, &$found_forms, &$found_blocks)
         {
@@ -3315,6 +3495,7 @@ namespace {
          * @param array $block        The block to be processed.
          * @param array $found_forms  An array of found forms using the form ID as the key to the ajax status.
          * @param array $found_blocks An array of found GF blocks.
+         * @phpstan-return void
          */
         public static function parse_forms_from_reusable_block($block, &$found_forms, &$found_blocks)
         {
@@ -3326,6 +3507,7 @@ namespace {
          *
          * @param string $post_content The post content to be processed.
          * @param array  $found_forms  An array of found forms using the form ID as the key to the ajax status.
+         * @phpstan-return void
          */
         public static function parse_forms_from_shortcode($post_content, &$found_forms)
         {
@@ -3528,15 +3710,20 @@ namespace {
         {
         }
         /**
-         * @param GF_Field $field
-         * @param string   $value
-         * @param bool     $force_frontend_label
-         * @param null     $form
-         * @param null     $field_values
+         * Gets the markup for a given field.
          *
-         * @return string|string[]|void
+         * @since 2.9.5 Added the optional $page_number parameter.
+         *
+         * @param GF_Field $field                The field object.
+         * @param string   $value                The field value to be pre-populated into the field.
+         * @param bool     $force_frontend_label Forces the frontend label to be displayed in the admin even if an admin label is configured. Defaults to false.
+         * @param array    $form                 The form object.
+         * @param array    $field_values         The array of field values used to pre-populate the form.
+         * @param int      $page_number          A non-zero value indicates that only that page should be rendered. This affects how page fields are rendered. Defaults to 0.
+         *
+         * @return string|null Returns the markup for the specified field.
          */
-        public static function get_field($field, $value = '', $force_frontend_label = \false, $form = \null, $field_values = \null)
+        public static function get_field($field, $value = '', $force_frontend_label = \false, $form = \null, $field_values = \null, $page_number = 0)
         {
         }
         /**
@@ -3731,6 +3918,7 @@ namespace {
          * Gets a list of validation errors.
          *
          * @since 2.5
+         * @since 2.9.18 Added support for getting the message from the field validation_summary_message context property.
          *
          * @param array $form   Current form being displayed.
          * @param array $values Submitted values.
@@ -3801,6 +3989,7 @@ namespace {
          * @param array|null $field_values  The field values to be used to populate the form. Only used when $context is 'form_display'.
          *
          * @return array Returns the form object after being filtered by the gform_pre_render filter.
+         * @phpstan-param 'form_display'|'form_config' $context
          */
         public static function gform_pre_render($form, $context, $ajax = \null, $field_values = \null)
         {
@@ -3824,6 +4013,39 @@ namespace {
          * @return mixed
          */
         public static function get_confirmation_markup($form, $confirmation_message, $ajax, $style_settings = \false, $form_theme = \null)
+        {
+        }
+        /**
+         * Gets the last page's footer markup in a multipage form.
+         *
+         * @since 2.9.5
+         *
+         * @param array  $form                The current form object.
+         * @param string $label_placement     The label placement setting for the form.
+         * @param bool   $ajax                Indicates if AJAX is enabled for the current form.
+         * @param array  $field_values        The field values to be used to populate the form.
+         * @param bool   $display_title       Indicates if the form title should be displayed.
+         * @param bool   $display_description Indicates if the form description should be displayed.
+         * @param int    $tabindex            The starting tabindex.
+         * @param string $form_theme          The theme selected for the form.
+         * @param string $style_settings      The styles for the form.
+         * @param string $submission_method   The submission method for the form.
+         *
+         * @return string Returns the markup for the last page's footer.
+         */
+        public static function get_last_page_footer($form, $label_placement, $ajax, $field_values, $display_title, $display_description, $tabindex, $form_theme, $style_settings, $submission_method)
+        {
+        }
+        /**
+         * Gets the first page's header markup in a multipage form.
+         *
+         * @since 2.9.5
+         *
+         * @param array $form The current form object.
+         *
+         * @return string Returns the markup for the first page's header.
+         */
+        public static function get_first_page_header($form)
         {
         }
     }
@@ -3999,12 +4221,29 @@ namespace {
          * Prepare form settings fields.
          *
          * @since 2.5
+         * @since 2.9.8  Updated honeypotAction default to spam.
+         * @since 2.9.21 Moved the honeypot fields to a new spam section and added submission speed check fields.
          *
          * @param array $form Form being edited.
          *
          * @return array
          */
         public static function form_settings_fields($form)
+        {
+        }
+        /**
+         * The Settings API runs the settings field method before processing the postback,
+         * so we have to run this hack to ensure we're respecting the posted value on initial load.
+         *
+         * @todo - Remove this and fix the Settings API order-of-operations.
+         *
+         * @since 3.0.0
+         *
+         * @param array $form The form to check.
+         *
+         * @return bool
+         */
+        public static function legacy_markup_enabled_or_posted($form)
         {
         }
         /**
@@ -4037,11 +4276,28 @@ namespace {
         public static function legacy_markup_warning()
         {
         }
+        /**
+         * Displays a warning if confirmation deprecated CSS Ready Classes are used in the form settings.
+         *
+         * This method checks if the form uses any deprecated CSS Ready Classes and displays
+         * a warning message. It also ensures the warning is not shown if the user has dismissed it.
+         *
+         * @since 2.9.15
+         *
+         * @param array $form The form object being checked for deprecated classes.
+         *
+         * @return string|false The HTML for the warning message or false if no warning is needed.
+         */
+        public static function deprecated_classes_warning($form)
+        {
+        }
         // # SETTINGS RENDERER ---------------------------------------------------------------------------------------------
         /**
          * Initialize Plugin Settings fields renderer.
          *
          * @since 2.5
+         * @since 2.9.8  Updated honeypotAction default to spam.
+         * @since 2.9.21 Updated to save the submission speed check fields.
          */
         public static function initialize_settings_renderer()
         {
@@ -4084,7 +4340,6 @@ namespace {
          * @uses    SCRIPT_DEBUG
          * @uses    GFFormsModel::get_form_meta()
          * @uses    GFFormSettings::get_tabs()
-         * @uses    GFCommon::form_page_title()
          * @uses    GFCommon::display_dismissible_message()
          * @uses    GFCommon::display_admin_message()
          * @uses    GFForms::top_toolbar()
@@ -4147,6 +4402,7 @@ namespace {
          * @uses    GFCommon::add_error_message()
          *
          * @return void
+         * @phpstan-return void
          */
         public static function maybe_process_confirmation_list_action()
         {
@@ -4238,6 +4494,7 @@ namespace {
          * @uses GFAPI::update_form()
          *
          * @return void
+         * @phpstan-return never
          */
         public static function save_form_title()
         {
@@ -4914,6 +5171,7 @@ namespace {
          * @param string $status  The new status.
          *
          * @return void
+         * @phpstan-return void
          */
         public static function change_entry_status($lead_id, $status)
         {
@@ -4927,6 +5185,7 @@ namespace {
          * @param int $lead_id The entry ID.
          *
          * @return void
+         * @phpstan-return void
          */
         public static function restore_entry_status($lead_id)
         {
@@ -5044,6 +5303,7 @@ namespace {
          *
          * @param array $new_display_meta Form meta.
          * @param int    $form_id Form ID.
+         * @phpstan-return void
          */
         public static function maybe_create_form_revision($new_display_meta, $form_id)
         {
@@ -5089,6 +5349,7 @@ namespace {
          *
          * @param int $form_id The current form ID.
          * @param int $field_id The ID of field being deleted.
+         * @phpstan-return void
          */
         public static function delete_field_files($form_id, $field_id)
         {
@@ -5230,6 +5491,7 @@ namespace {
          * @param string         $error_info     Additional details for notifications with error.
          * @param array          $email          Array containing email details.
          * @param array          $note_args      Array containing text, type and subtype for the note.
+         * @phpstan-return void
          */
         public static function add_notification_note($entry_id, $result, $notification, $error_info = '', $email = array(), $note_args = array())
         {
@@ -5255,6 +5517,7 @@ namespace {
          *
          * @param array $form  Form object.
          * @param array $entry Entry object.
+         * @phpstan-return void
          */
         public static function save_entry($form, &$entry)
         {
@@ -5267,9 +5530,10 @@ namespace {
          *
          * @since 2.5.16
          *
-         * @param $field
-         * @param $form
-         * @param $entry
+         * @param GF_Field $field The current field.
+         * @param array    $form  The form that contains the field.
+         * @param array    $entry The entry that was saved.
+         * @phpstan-return void
          */
         public static function save_extra_field_meta($field, $form, $entry)
         {
@@ -5290,6 +5554,7 @@ namespace {
          * @since 2.4.5.8
          *
          * @param array $entry The partial or complete entry currently being updated.
+         * @phpstan-return void
          */
         public static function add_properties_to_entry(&$entry)
         {
@@ -5300,6 +5565,7 @@ namespace {
          * @since 2.4.5.8
          *
          * @param array $entry The partial or complete entry currently being updated.
+         * @phpstan-return void
          */
         public static function add_meta_to_entry(&$entry)
         {
@@ -5584,6 +5850,17 @@ namespace {
         public static function add_email_to_draft_sumbmission($token, $email)
         {
         }
+        /**
+         * Returns the given value with leading and trailing whitespace removed if the value is not null or blank and trimming is enabled.
+         *
+         * @since unknown
+         *
+         * @param string|array|null $value   The field value to be trimmed.
+         * @param int               $form_id The ID of the form to which the field belongs.
+         * @param GF_Field          $field   The field object the value belongs to.
+         *
+         * @return string|array|null
+         */
         public static function maybe_trim_input($value, $form_id, $field)
         {
         }
@@ -5605,10 +5882,13 @@ namespace {
          * Retrieves the custom field names (meta keys) for the custom field select in the form editor.
          *
          * @since unknown
+         * @since 2.9.10 Added the $limit parameter.
+         *
+         * @param string $limit Optional. Limits the number of custom field names returned. Default is empty (no limit).
          *
          * @return array
          */
-        public static function get_custom_field_names()
+        public static function get_custom_field_names($limit = '')
         {
         }
         public static function get_input_masks()
@@ -5635,12 +5915,20 @@ namespace {
         public static function is_checkbox_checked($field_id, $field_label, $lead, $form)
         {
         }
+        /**
+         * @depecated 1.9
+         * @remove-in 3.0
+         */
         public static function get_fileupload_value($form_id, $input_name)
         {
         }
         public static function get_form_unique_id($form_id)
         {
         }
+        /**
+         * @depecated 2.9.18
+         * @remove-in 3.1
+         */
         public static function get_temp_filename($form_id, $input_name)
         {
         }
@@ -5689,6 +5977,7 @@ namespace {
          * @param array        $current_fields
          * @param string       $input_id
          * @param string       $item_index
+         * @phpstan-return void
          */
         public static function queue_save_input_value($value, $form, $field, &$lead, $current_fields, $input_id, $item_index = '')
         {
@@ -5768,6 +6057,10 @@ namespace {
         public static function set_permissions($path)
         {
         }
+        /**
+         * @depecated 1.9
+         * @remove-in 3.0
+         */
         public static function upload_file($form_id, $file)
         {
         }
@@ -5781,13 +6074,14 @@ namespace {
         {
         }
         /*
-         * Get the path to the temporary upload directory for a form
+         * Get the path to the temporary upload directory for a form.
          *
          * @since 2.9.3
+         * @since 2.9.18 Added static caching.
          *
-         * @param int $form_id The ID of the form
+         * @param int $form_id The ID of the form.
          *
-         * @return array The path and url to the temporary upload directory for a form
+         * @return array The path and url to the temporary upload directory for a form.
          */
         public static function get_tmp_upload_location($form_id)
         {
@@ -5838,14 +6132,14 @@ namespace {
          * @param array      $search_criteria {
          * 		Array of search criteria.
          *
-         * 		@type int    $id         Get the note with this ID.
-         * 		@type int    $entry_id   Get notes associated with this entry ID.
-         * 		@type int    $user_id    Get notes with this user ID.
-         * 		@type string $user_name  Get notes with this user name.
-         * 		@type string $note_type  Get notes with this note type.
-         * 		@type string $sub_type   Get notes with this sub type.
-         * 		@type string $start_date Get notes on or after this date.  Expects SQL datetime format.
-         * 		@type string $end_date   Get notes on or before this date.  Expects SQL datetime format.
+         * 		@type int       $id         Get the note with this ID.
+         * 		@type int|array $entry_id   Get notes associated with this entry ID or array of IDs.
+         * 		@type int       $user_id    Get notes with this user ID.
+         * 		@type string    $user_name  Get notes with this user name.
+         * 		@type string    $note_type  Get notes with this note type.
+         * 		@type string    $sub_type   Get notes with this sub type.
+         * 		@type string    $start_date Get notes on or after this date.  Expects SQL datetime format.
+         * 		@type string    $end_date   Get notes on or before this date.  Expects SQL datetime format.
          * }
          * @param null|array $sorting {
          * 		Array of sort key and direction.
@@ -6125,11 +6419,15 @@ namespace {
         {
         }
         /**
-         * Set RGFormsModel::$lead for use in hooks where $lead is not explicitly passed.
+         * Populates the the static $_current_lead property withh the given entry, for use in hooks where it is not explicitly passed.
          *
-         * @param mixed $lead
+         * @since unknown
+         * @since 2.9.16 Added the $flush_cache param.
+         *
+         * @param array $lead        The entry to be cached.
+         * @param bool  $flush_cache Indicates if the contents of the static $_cache property should be flushed.
          */
-        public static function set_current_lead($lead)
+        public static function set_current_lead($lead, $flush_cache = \true)
         {
         }
         /**
@@ -6492,6 +6790,7 @@ namespace {
          * Update the recent forms list for the current user when a form is edited or trashed.
          *
          * @since 2.0.7.14
+         * @since 2.9.12 Removed the dependency on the admin toolbar being enabled.
          *
          * @param int $form_id The ID of the current form.
          * @param bool $trashed Indicates if the form was trashed. Default is false, form was opened for editing.
@@ -6526,8 +6825,9 @@ namespace {
          * $_POST['gform_uploaded_files'] and caches them in GFFormsModel::$uploaded_files.
          *
          * @since 2.4.3.5
+         * @since 2.9.18 Deprecated the string-based (file/basename) input value. Added support for dynamically populated file URLs using the `url` key.
          *
-         * @param $form_id
+         * @param int $form_id The ID of the form the submission is being processed for.
          *
          * @return array
          */
@@ -6617,7 +6917,7 @@ namespace {
          *
          * @var string $version The version number.
          */
-        public static $version = '2.9.3';
+        public static $version = '2.9.22';
         /**
          * Handles background upgrade tasks.
          *
@@ -6805,6 +7105,7 @@ namespace {
          * @uses   GFFormDisplay::process_send_resume_link()
          *
          * @return void
+         * @phpstan-return void
          */
         public static function maybe_process_form()
         {
@@ -6819,6 +7120,7 @@ namespace {
          * @uses   GFCommon::get_base_path()
          *
          * @return void
+         * @phpstan-return void
          */
         public static function process_exterior_pages()
         {
@@ -6845,6 +7147,7 @@ namespace {
          * @access public
          *
          * @return void
+         * @phpstan-return void
          */
         public static function add_security_files()
         {
@@ -6857,6 +7160,7 @@ namespace {
          * @global $wp_styles
          *
          * @uses   GFForms::no_conflict_mode()
+         * @phpstan-return void
          */
         public static function no_conflict_mode_style()
         {
@@ -6869,6 +7173,7 @@ namespace {
          * @global $wp_scripts
          *
          * @uses   GFForms::no_conflict_mode()
+         * @phpstan-return void
          */
         public static function no_conflict_mode_script()
         {
@@ -6932,6 +7237,7 @@ namespace {
          *
          * @param string $old_language The language before the user changed their language setting.
          * @param string $new_language The new language after the user changed their language setting.
+         * @phpstan-return void
          */
         public static function update_translations($old_language, $new_language)
         {
@@ -6944,6 +7250,7 @@ namespace {
          *
          * @param object $upgrader_object WP_Upgrader Instance.
          * @param array  $hook_extra Item update data.
+         * @phpstan-return void
          */
         public static function install_addon_translations($upgrader_object, $hook_extra)
         {
@@ -7220,6 +7527,7 @@ namespace {
          *
          * @since  Unknown
          * @access public
+         * @phpstan-return void
          */
         public static function add_form_button()
         {
@@ -7261,6 +7569,7 @@ namespace {
          *
          * @param string $plugin_name The plugin filename.  Immediately overwritten.
          * @param array  $plugin_data An array of plugin data.
+         * @phpstan-return void
          */
         public static function plugin_row($plugin_name, $plugin_data)
         {
@@ -7274,6 +7583,7 @@ namespace {
          * @param array  $plugin_data An array of plugin data.
          * @param string $slug        The add-on slug.
          * @param string $version     The add-on version.
+         * @phpstan-return void
          */
         public static function maybe_display_update_notification($plugin_name, $plugin_data, $slug = '', $version = '')
         {
@@ -7300,6 +7610,7 @@ namespace {
          *
          * @param $args
          * @param $response
+         * @phpstan-return void
          */
         public static function in_plugin_update_message($args, $response)
         {
@@ -7309,6 +7620,7 @@ namespace {
          *
          * @since  Unknown
          * @access public
+         * @phpstan-return void
          */
         public static function display_changelog()
         {
@@ -7339,6 +7651,7 @@ namespace {
          *
          * @since  Unknown
          * @access public
+         * @phpstan-return void
          */
         public static function dashboard_setup()
         {
@@ -7357,6 +7670,7 @@ namespace {
          *
          * @since  Unknown
          * @access public
+         * @phpstan-return void
          */
         public static function dashboard_update_message()
         {
@@ -7428,6 +7742,7 @@ namespace {
          *
          * @since  2.5.2
          * @access public
+         * @phpstan-return void
          */
         public static function load_hooks_with_inline_script()
         {
@@ -7437,6 +7752,7 @@ namespace {
          *
          * @since  2.5.3
          * @access public
+         * @phpstan-return void
          */
         public static function localize_hook_vars()
         {
@@ -7448,6 +7764,7 @@ namespace {
          * @access public
          *
          * @param null $hook Not used.
+         * @phpstan-return void
          */
         public static function enqueue_admin_scripts($hook)
         {
@@ -7501,6 +7818,7 @@ namespace {
          *
          * @since  Unknown
          * @access public
+         * @phpstan-return void
          */
         public static function new_form()
         {
@@ -7549,6 +7867,7 @@ namespace {
          * @access public
          *
          * @uses   GFSettings::settings_page()
+         * @phpstan-return void
          */
         public static function settings_page()
         {
@@ -7594,6 +7913,7 @@ namespace {
          *
          * @uses   GFForms::maybe_display_wizard()
          * @uses   GFExport::export_page()
+         * @phpstan-return void
          */
         public static function export_page()
         {
@@ -7651,6 +7971,7 @@ namespace {
          * Outputs a JSON string with the status and then triggers the background upgrader usually handled by the cron healthcheck.
          *
          * @since 2.3.0.4
+         * @phpstan-return never
          */
         public static function ajax_force_upgrade()
         {
@@ -7662,6 +7983,7 @@ namespace {
          *
          * @since  Unknown
          * @access public
+         * @phpstan-return void
          */
         public static function addons_page()
         {
@@ -7741,6 +8063,7 @@ namespace {
          *
          * @since  Unknown
          * @access public
+         * @phpstan-return never
          */
         public static function get_address_rule_values_select()
         {
@@ -7767,6 +8090,7 @@ namespace {
          * @uses   GFForms::maybe_display_wizard()
          * @uses   GFEntryDetail::lead_detail_page()
          * @uses   GFEntryList::all_entries_page()
+         * @phpstan-return void
          */
         public static function all_leads_page()
         {
@@ -7797,6 +8121,7 @@ namespace {
          * @uses   GFFormSettings::form_settings_page()
          * @uses   GFForms::forms_page()
          * @uses   GFForms::form_list_page()
+         * @phpstan-return void
          */
         public static function forms()
         {
@@ -7836,6 +8161,7 @@ namespace {
          * @access public
          *
          * @uses   GFCommon::send_notification()
+         * @phpstan-return never
          */
         public static function resend_notifications()
         {
@@ -7849,6 +8175,7 @@ namespace {
          *
          * @since  Unknown
          * @access public
+         * @phpstan-return never
          */
         public static function captcha_image()
         {
@@ -7987,6 +8314,19 @@ namespace {
         {
         }
         /**
+         * Retrieves the form with complete meta in the form editor.
+         *
+         * Called via AJAX.
+         *
+         * @since  2.9.9
+         * @access public
+         *
+         * @uses   \GFFormDetail::ajax_get_form()
+         */
+        public static function ajax_get_form()
+        {
+        }
+        /**
          * Changes the input type in the form editor.
          *
          * Called via AJAX.
@@ -8047,6 +8387,7 @@ namespace {
          * @access public
          *
          * @uses   GFFormsModel::delete_file()
+         * @phpstan-return never
          */
         public static function delete_file()
         {
@@ -8060,6 +8401,7 @@ namespace {
          * @access public
          *
          * @uses   GFFormsModel::get_form_meta()
+         * @phpstan-return never
          */
         public static function select_export_form()
         {
@@ -8122,6 +8464,7 @@ namespace {
          * Used to check that background tasks are working.
          *
          * @since 2.3
+         * @phpstan-return never
          */
         public static function check_background_tasks()
         {
@@ -8133,6 +8476,7 @@ namespace {
          * @access public
          *
          * @param array $form The Form Object.
+         * @phpstan-return void
          */
         public static function edit_form_title($form)
         {
@@ -8140,24 +8484,48 @@ namespace {
         /**
          * Displays the form switcher dropdown.
          *
-         * @param string $title The form title
+         *  @since  Unknown
+         *  @since  2.9.6   Updated to list only the recent forms.
          *
-         * @since  Unknown
-         * @access public
+         * @param string $title   The form title.
+         * @param string $form_id The form ID.
          */
-        public static function form_switcher($title = '')
+        public static function form_switcher($title = '', $form_id = '')
         {
         }
         /**
          * Checks if the form has a results/sales page and returns the slug of the add-on that implements the page.
          *
          * @since 2.5.13
+         * @since 2.9.6 Param changed from (object) $form to (int) $form_id.
          *
-         * @param Object|array $form The form object
+         * @param int $form_id The form id
          *
          * @return string|int  The slug string if found, 0 if not found
          */
-        protected static function get_form_switcher_results_page_slug($form)
+        protected static function get_form_switcher_results_page_slug($form_id)
+        {
+        }
+        /*
+         * Returns the results page attribute to be used in the form switcher.
+         *
+         * @since 2.9.6
+         *
+         * @param int $form_id The form ID.
+         * @return string The results page attribute.
+         */
+        public static function get_form_switcher_results_page_attr($form_id)
+        {
+        }
+        /**
+         * Returns the subview attribute to be used in the form switcher.
+         *
+         * @since 2.9.6
+         *
+         * @param int $form_id The form ID.
+         * @return string The subview attribute.
+         */
+        public static function get_form_switcher_subview_attr($form_id)
         {
         }
         /**
@@ -8203,6 +8571,7 @@ namespace {
          * @uses   GFFormsModel::get_forms()
          * @uses   GFForms::get_toolbar_menu_items()
          * @uses   GFForms::format_toolbar_menu_items()
+         * @phpstan-return void
          */
         public static function top_toolbar()
         {
@@ -8291,6 +8660,7 @@ namespace {
          * @global $wp_admin_bar
          *
          * @used-by GFForms::init()
+         * @phpstan-return void
          */
         public static function admin_bar()
         {
@@ -8396,6 +8766,7 @@ namespace {
          * @since  Unknown
          * @access public
          * @global $post
+         * @phpstan-return never
          */
         public static function handle_ajax_do_shortcode()
         {
@@ -8488,6 +8859,7 @@ namespace {
          *
          * @since  2.4
          * @access public
+         * @phpstan-return void
          */
         public static function maybe_display_logging_notice()
         {
@@ -8564,6 +8936,7 @@ namespace {
          *
          * @since  2.0.0
          * @access public
+         * @phpstan-return void
          */
         public static function delete_old_export_files()
         {
@@ -8573,6 +8946,7 @@ namespace {
          *
          * @since  2.0.0
          * @access public
+         * @phpstan-return void
          */
         public static function delete_old_log_files()
         {
@@ -8585,6 +8959,7 @@ namespace {
          * @access public
          * @global $wpdb
          * @remove-in 3.0
+         * @phpstan-return void
          */
         public static function delete_orphaned_entries()
         {
@@ -8597,6 +8972,7 @@ namespace {
          *
          * @since  2.0.1.2
          * @access public
+         * @phpstan-return void
          */
         public static function load_admin_bar_styles()
         {
@@ -8756,6 +9132,7 @@ namespace {
          * @since 2.5.3
          *
          * @return void
+         * @phpstan-return void
          */
         public static function init_buffer()
         {
@@ -8795,6 +9172,7 @@ namespace {
          *
          * @since  Unknown
          * @access public
+         * @phpstan-return void
          */
         public static function help_page()
         {
@@ -9044,11 +9422,11 @@ namespace {
          */
         protected $_url;
         /**
-         * @var string Title of the plugin to be used on the settings page, form settings and plugins page. Example: 'Gravity Forms MailChimp Add-On'
+         * @var string Title of the plugin to be used on the settings page, form settings and plugins page. Example: 'Gravity Forms Mailchimp Add-On'
          */
         protected $_title;
         /**
-         * @var string Short version of the plugin title to be used on menus and other places where a less verbose string is useful. Example: 'MailChimp'
+         * @var string Short version of the plugin title to be used on menus and other places where a less verbose string is useful. Example: 'Mailchimp'
          */
         protected $_short_title;
         /**
@@ -9151,6 +9529,7 @@ namespace {
          *
          * @param string $class - The class name
          * @param string $overrides - Specify the class to replace/override
+         * @phpstan-return void
          */
         public static function register($class, $overrides = \null)
         {
@@ -9173,7 +9552,7 @@ namespace {
         /**
          * Finds a registered add-on by its slug and return its instance.
          *
-         * @since 2.7.17
+         * @since 2.9.1
          *
          * @param string $slug The add-on slug.
          *
@@ -9205,6 +9584,7 @@ namespace {
         }
         /**
          * Override this function to add initialization code (i.e. hooks) for the admin site (WP dashboard)
+         * @phpstan-return void
          */
         public function init_admin()
         {
@@ -9313,6 +9693,7 @@ namespace {
         }
         /**
          * Override this function to add to add database update scripts or any other code to be executed when the Add-On version changes
+         * @phpstan-return void
          */
         public function upgrade($previous_version)
         {
@@ -9666,6 +10047,7 @@ namespace {
          * @access public
          *
          * @uses   GFAddOn::get_short_title()
+         * @phpstan-return void
          */
         public function members_register_caps()
         {
@@ -10765,6 +11147,7 @@ namespace {
          * Creates a top level app menu. Adds the app settings page automatically if it's configured.
          * Target of the WordPress admin_menu action.
          * Not intended to be overridden or called directly by add-ons.
+         * @phpstan-return void
          */
         public function create_app_menu()
         {
@@ -10815,6 +11198,7 @@ namespace {
          * Handles the rendering of app menu items that implement the tabs UI.
          *
          * Not intended to be overridden or called directly by add-ons.
+         * @phpstan-return void
          */
         public function app_tab_page()
         {
@@ -11108,6 +11492,7 @@ namespace {
          * Override this function to customize the markup for the uninstall section on the plugin settings page.
          *
          * @since Unknown
+         * @phpstan-return void
          */
         public function render_uninstall()
         {
@@ -11116,6 +11501,7 @@ namespace {
          * Render a settings button for addons that have overridden the render_uninstall field. Not intended to be called directly or overridden by addons.
          *
          * @since 2.5
+         * @phpstan-return void
          */
         public function render_settings_button()
         {
@@ -11167,6 +11553,7 @@ namespace {
          *
          * @param string $plugin_name The plugin filename.  Immediately overwritten.
          * @param array  $plugin_data An array of plugin data.
+         * @phpstan-return void
          */
         public function plugin_row($plugin_name, $plugin_data)
         {
@@ -11430,7 +11817,7 @@ namespace {
          *
          * @return bool
          */
-        protected final function method_is_overridden($method_name, $base_class = 'GFAddOn')
+        final protected function method_is_overridden($method_name, $base_class = 'GFAddOn')
         {
         }
         /**
@@ -11448,7 +11835,7 @@ namespace {
          *
          * @return string
          */
-        public static final function get_gfaddon_base_url()
+        final public static function get_gfaddon_base_url()
         {
         }
         /**
@@ -11456,7 +11843,7 @@ namespace {
          *
          * @return string
          */
-        public static final function get_gfaddon_base_path()
+        final public static function get_gfaddon_base_path()
         {
         }
         /**
@@ -11506,6 +11893,7 @@ namespace {
          * Display an upgrade notice if the current version of Gravity Forms is not fully supported.
          *
          * @since 2.7.12
+         * @phpstan-return void
          */
         public function maybe_display_upgrade_notice()
         {
@@ -11714,6 +12102,7 @@ namespace {
          * Fixes the add-on _path property value, if the directory has been renamed.
          *
          * @since 2.4.17
+         * @phpstan-return void
          */
         public function update_path()
         {
@@ -11743,6 +12132,7 @@ namespace {
          * Inits the TranslationsPress integration for official add-ons.
          *
          * @since 2.5.6
+         * @phpstan-return void
          */
         public function init_translations()
         {
@@ -11753,6 +12143,7 @@ namespace {
          * @since 2.5.6
          *
          * @param string $locale The locale the translations are to be installed for.
+         * @phpstan-return void
          */
         public function install_translations($locale = '')
         {
@@ -11917,6 +12308,9 @@ namespace {
          * @var array {
          *     @type string $option_label The label to displayed for the add-ons delay checkbox, in the Post Payment Actions section of the payment add-ons feed configuration page.
          * }
+         * @phpstan-var array{
+         *   option_label: string,
+         * }
          */
         public $delayed_payment_integration = array();
         /**
@@ -11977,16 +12371,80 @@ namespace {
         {
         }
         //-------- Front-end methods ---------------------------
+        public function set_bypass_feed_delay($bypass)
+        {
+        }
         /**
          * Determines what feeds need to be processed for the provided entry.
          *
+         * @since  1.7.7
+         * @since  2.9.4 Updated to save the processing status for each feed of compatible add-ons.
+         *
          * @access public
+         *
          * @param array $entry The Entry Object currently being processed.
-         * @param array $form The Form Object currently being processed.
+         * @param array $form  The Form Object currently being processed.
          *
          * @return array $entry
          */
         public function maybe_process_feed($entry, $form)
+        {
+        }
+        /**
+         * Retrieves the name of the given feed.
+         *
+         * @since 2.9.9
+         *
+         * @param array  $feed The feed.
+         * @param string $key  Optional. The key used to store the name.
+         *
+         * @return string
+         */
+        public function get_feed_name($feed, $key = '')
+        {
+        }
+        /**
+         * Saves the status of the given feed to the "feed_{$feed_id}_status" entry meta.
+         *
+         * @since 2.9.4
+         *
+         * @param null|bool|array|WP_Error|Exception $result   The value returned by `process_feed()`.
+         * @param int                                $entry_id The ID of the entry the feed was processed for.
+         * @param int                                $feed_id  The ID of the feed that was processed.
+         * @param int                                $form_id  The ID of the form the entry and feed belong to.
+         *
+         * @return void
+         * @phpstan-return void
+         */
+        public function save_entry_feed_status($result, $entry_id, $feed_id, $form_id)
+        {
+        }
+        /**
+         * Triggers the post_process_feed hooks.
+         *
+         * @since 2.9.4
+         *
+         * @param array $feed  The feed which was processed.
+         * @param array $entry The entry the feed was processed for.
+         * @param array $form  The form the entry and feed belong to.
+         *
+         * @return void
+         * @phpstan-return void
+         */
+        public function post_process_feed($feed, $entry, $form)
+        {
+        }
+        /**
+         * Sets the "{slug}_is_fulfilled" entry meta.
+         *
+         * @since 2.9.4
+         *
+         * @param int $entry_id The entry ID.
+         * @param int $form_id  The form ID.
+         *
+         * @return void
+         */
+        public function fulfill_entry($entry_id, $form_id)
         {
         }
         /**
@@ -12042,16 +12500,36 @@ namespace {
         {
         }
         /**
+         * Determines if the feed can be processed based on the contents of the processed feeds entry meta.
+         *
+         * @since 2.9.19
+         *
+         * @param array $feed  The feed being processing.
+         * @param array $entry The entry being processed.
+         * @param array $form  The form the entry belongs to.
+         *
+         * @return bool Returns true if the feed can be processed, otherwise false.
+         */
+        public function can_process_feed($feed, $entry, $form)
+        {
+        }
+        /**
          * Processes feed action.
          *
          * @since  Unknown
+         * @since  2.9.4 Documented the supported return types for saving the feed status.
+         *
          * @access public
          *
-         * @param array  $feed  The Feed Object currently being processed.
-         * @param array  $entry The Entry Object currently being processed.
-         * @param array  $form  The Form Object currently being processed.
+         * @param array $feed  The Feed Object currently being processed.
+         * @param array $entry The Entry Object currently being processed.
+         * @param array $form  The Form Object currently being processed.
          *
-         * @return array|null Returns a modified entry object or null.
+         * @return void|null|bool|WP_Error|array The returned value determines if the feed status is saved to the "feed_{$feed_id}_status" entry meta.
+         *                                       - void or null when the feed status should not be saved.
+         *                                       - false or a WP_Error when a failed status should be saved.
+         *                                       - true or the entry array when a success status should be saved.
+         * @phpstan-return void
          */
         public function process_feed($feed, $entry, $form)
         {
@@ -12186,6 +12664,17 @@ namespace {
         public function get_single_submission_feed_by_form($form, $entry)
         {
         }
+        /**
+         * Allows the feeds to be filtered before they are processed.
+         *
+         * @since 2.0
+         *
+         * @param false|array $feeds False or an array of feeds for the current form.
+         * @param array       $entry The entry being processed.
+         * @param array       $form  The form the entry and feeds belong to.
+         *
+         * @return false|array
+         */
         public function pre_process_feeds($feeds, $entry, $form)
         {
         }
@@ -12277,6 +12766,7 @@ namespace {
          *
          * @param int $form_id The ID of the original form.
          * @param int $new_id The ID of the duplicate form.
+         * @phpstan-return void
          */
         public function post_form_duplicated($form_id, $new_id)
         {
@@ -12374,6 +12864,7 @@ namespace {
          *
          * @param array $form    Current Form object.
          * @param int   $feed_id Current feed ID.
+         * @phpstan-return void
          */
         public function feed_edit_page($form, $feed_id)
         {
@@ -12535,20 +13026,6 @@ namespace {
         {
         }
         /**
-         * Triggers processing of feeds delayed by the PayPal add-on.
-         *
-         * @since 2.4.13 Updated to use action_trigger_payment_delayed_feeds().
-         * @since unknown
-         *
-         * @param array  $entry          The entry currently being processed.
-         * @param array  $paypal_config  The payment feed which originated the transaction.
-         * @param string $transaction_id The transaction or subscription ID.
-         * @param string $amount         The transaction amount.
-         */
-        public function paypal_fulfillment($entry, $paypal_config, $transaction_id, $amount)
-        {
-        }
-        /**
          * Triggers processing of feeds delayed by payment add-ons.
          *
          * @since 2.4.13
@@ -12557,6 +13034,7 @@ namespace {
          * @param array      $payment_feed   The payment feed which originated the transaction.
          * @param array      $entry          The entry currently being processed.
          * @param null|array $form           The form currently being processed or null for the legacy PayPal integration.
+         * @phpstan-return void
          */
         public function action_trigger_payment_delayed_feeds($transaction_id, $payment_feed, $entry, $form = \null)
         {
@@ -12675,6 +13153,7 @@ namespace {
          * @since 2.5
          *
          * @param string $which
+         * @phpstan-return void
          */
         protected function extra_tablenav($which)
         {
@@ -12685,6 +13164,7 @@ namespace {
          * @since 2.5
          *
          * @param string $which The location.
+         * @phpstan-return void
          */
         protected function display_tablenav($which)
         {
@@ -12702,8 +13182,13 @@ namespace {
         {
         }
     }
+}
+namespace Gravity_Forms\Gravity_Forms\Async {
     /**
      * Abstract WP_Async_Request class.
+     *
+     * @since 2.2
+     * @since 2.9.8 Namespaced.
      *
      * @abstract
      */
@@ -12762,7 +13247,7 @@ namespace {
         /**
          * Dispatch the async request
          *
-         * @return array|WP_Error
+         * @return array|\WP_Error
          */
         public function dispatch()
         {
@@ -12795,8 +13280,22 @@ namespace {
          * Maybe handle
          *
          * Check for correct nonce and pass to handler.
+         *
+         * @return void|mixed
          */
         public function maybe_handle()
+        {
+        }
+        /**
+         * Should the process exit with wp_die?
+         *
+         * @since 2.9.7
+         *
+         * @param mixed $return What to return if filter says don't die, default is null.
+         *
+         * @return void|mixed
+         */
+        protected function maybe_wp_die($return = null)
         {
         }
         /**
@@ -12805,18 +13304,28 @@ namespace {
          * Override this method to perform any actions required
          * during the async request.
          */
-        protected abstract function handle();
+        abstract protected function handle();
     }
     /**
      * Abstract GF_Background_Process class.
      *
+     * Based on WP_Background_Process
+     * https://github.com/A5hleyRich/wp-background-processing/blob/master/classes/wp-background-process.php
+     *
      * @since 2.2
+     * @since 2.9.8 Namespaced.
      *
      * @abstract
      * @extends WP_Async_Request
      */
-    abstract class GF_Background_Process extends \WP_Async_Request
+    abstract class GF_Background_Process extends \Gravity_Forms\Gravity_Forms\Async\WP_Async_Request
     {
+        /**
+         * The default query arg name used for passing the chain ID to new processes.
+         *
+         * @since 2.9.7
+         */
+        const CHAIN_ID_ARG_NAME = 'chain_id';
         /**
          * Action
          *
@@ -12858,20 +13367,69 @@ namespace {
          */
         protected $cron_interval_identifier;
         /**
-         * Query_url
+         * Restrict object instantiation when using unserialize.
          *
-         * @since 2.3
+         * @since 2.9.7
          *
-         * @var string
-         * @access protected
+         * @var bool|array
          */
-        protected $query_url;
+        protected $allowed_batch_data_classes = true;
+        /**
+         * Null or the current batch.
+         *
+         * @since 2.9.4
+         *
+         * @var object|null
+         */
+        protected $current_batch;
+        /**
+         * Null or the current task.
+         *
+         * @since 2.9.9
+         *
+         * @var mixed|null
+         */
+        protected $current_task;
+        /**
+         * Indicates if the task uses an array that supports the attempts key.
+         *
+         * @since 2.9.9
+         *
+         * @var bool
+         */
+        protected $supports_attempts = false;
+        /**
+         * The status set when process is cancelling.
+         *
+         * @since 2.9.7
+         *
+         * @var int
+         */
+        const STATUS_CANCELLED = 1;
+        /**
+         * The status set when processing is paused using $this->pause( true ).
+         *
+         * @since 2.9.7
+         *
+         * @var int
+         */
+        const STATUS_PAUSED = 2;
+        /**
+         * The status set when processing is paused using $bp_object->pause() or $bp_object->pause( false ).
+         *
+         * @since 2.9.10
+         *
+         * @var int
+         */
+        const STATUS_PAUSED_NO_TS = 3;
         /**
          * Initiate new background process
          *
          * @since 2.2
+         *
+         * @param bool|array $allowed_batch_data_classes Optional. Array of class names that can be unserialized. Default true (any class).
          */
-        public function __construct()
+        public function __construct($allowed_batch_data_classes = true)
         {
         }
         /**
@@ -12881,19 +13439,9 @@ namespace {
          *
          * @access public
          *
-         * @return array|WP_Error
+         * @return array|\WP_Error|false HTTP Response array, WP_Error on failure, or false if not attempted.
          */
         public function dispatch()
-        {
-        }
-        /**
-         * Get the dispatch request arguments.
-         *
-         * @since 2.3-rc-2
-         *
-         * @return array
-         */
-        protected function get_post_args()
         {
         }
         /**
@@ -12912,6 +13460,7 @@ namespace {
          * Save queue
          *
          * @since 2.2
+         * @since 2.9.7 Added timestamps to the data array.
          *
          * @return $this
          */
@@ -12922,6 +13471,7 @@ namespace {
          * Update queue
          *
          * @since 2.2
+         * @since 2.9.7 Added timestamps to the data array.
          *
          * @param string $key Key.
          * @param array  $data Data.
@@ -12932,7 +13482,7 @@ namespace {
         {
         }
         /**
-         * Delete queue
+         * Delete batch from queue.
          *
          * @param string $key Key.
          *
@@ -12942,18 +13492,140 @@ namespace {
         {
         }
         /**
+         * Delete entire job queue.
+         *
+         * @since 2.9.7
+         */
+        public function delete_all()
+        {
+        }
+        /**
+         * Cancel job on next batch.
+         *
+         * @since 2.9.7
+         */
+        public function cancel()
+        {
+        }
+        /**
+         * Has the process been cancelled?
+         *
+         * @since 2.9.7
+         *
+         * @return bool
+         */
+        public function is_cancelled()
+        {
+        }
+        /**
+         * Called when background process has been cancelled.
+         *
+         * @since 2.9.7
+         */
+        protected function cancelled()
+        {
+        }
+        /**
+         * Pause job on next batch.
+         *
+         * @since 2.9.7
+         *
+         * @param bool $set_timestamp Indicates of the timestamp option should be set, so it can be used by the cron healthcheck to automatically resume processing.
+         */
+        public function pause($set_timestamp = false)
+        {
+        }
+        /**
+         * Has the process been paused?
+         *
+         * @since 2.9.7
+         *
+         * @return bool
+         */
+        public function is_paused()
+        {
+        }
+        /**
+         * Called when background process has been paused.
+         *
+         * @since 2.9.7
+         */
+        protected function paused()
+        {
+        }
+        /**
+         * Resume job.
+         *
+         * @since 2.9.7
+         *
+         * @param bool $dispatch Indicates if the Ajax request to trigger processing of the queue should be sent.
+         */
+        public function resume($dispatch = true)
+        {
+        }
+        /**
+         * Called when background process has been resumed.
+         *
+         * @since 2.9.7
+         */
+        protected function resumed()
+        {
+        }
+        /**
+         * Is queued?
+         *
+         * @since 2.9.7
+         *
+         * @return bool
+         */
+        public function is_queued()
+        {
+        }
+        /**
+         * Is the tool currently active, e.g. starting, working, paused or cleaning up?
+         *
+         * @since 2.9.7
+         *
+         * @return bool
+         */
+        public function is_active()
+        {
+        }
+        /**
          * Generate key
          *
          * Generates a unique key based on microtime. Queue items are
          * given a unique key so that they can be merged upon save.
          *
          * @since 2.2
+         * @since 2.9.7 Added the $key param.
          *
-         * @param int $length Length.
+         * @param int    $length Optional max length to trim key to, defaults to 64 characters.
+         * @param string $key    Optional string to append to identifier before hash, defaults to "batch".
          *
          * @return string
          */
-        protected function generate_key($length = 64)
+        protected function generate_key($length = 64, $key = 'batch')
+        {
+        }
+        /**
+         * Get the status key.
+         *
+         * @since 2.9.7
+         *
+         * @return string
+         */
+        protected function get_status_key()
+        {
+        }
+        /**
+         * Get the status value for the process.
+         *
+         * @since 2.9.7
+         *
+         * @return int
+         */
+        protected function get_status()
         {
         }
         /**
@@ -12963,6 +13635,8 @@ namespace {
          * the process is not already running.
          *
          * @since 2.2
+         *
+         * @return void|mixed
          */
         public function maybe_handle()
         {
@@ -12971,6 +13645,7 @@ namespace {
          * Is queue empty
          *
          * @since 2.2
+         * @since 2.9.7 Updated to use get_batch().
          *
          * @return bool
          */
@@ -12984,8 +13659,21 @@ namespace {
          * in a background process.
          *
          * @since 2.2
+         *
+         * @deprecated 2.9.7 Superseded.
+         * @see        is_processing()
          */
         protected function is_process_running()
+        {
+        }
+        /**
+         * Is the background process currently running?
+         *
+         * @since 2.9.7
+         *
+         * @return bool
+         */
+        public function is_processing()
         {
         }
         /**
@@ -12996,8 +13684,10 @@ namespace {
          * defined in the time_exceeded() method.
          *
          * @since 2.2
+         *
+         * @param bool $reset_start_time Optional, default true.
          */
-        protected function lock_process()
+        public function lock_process($reset_start_time = true)
         {
         }
         /**
@@ -13016,10 +13706,83 @@ namespace {
          * Get batch
          *
          * @since 2.2
+         * @since 2.9.7 Updated to use get_batches().
          *
          * @return stdClass Return the first batch from the queue
          */
         protected function get_batch()
+        {
+        }
+        /**
+         * Get batches.
+         *
+         * @since 2.9.7
+         *
+         * @param int $limit Number of batches to return, defaults to all.
+         *
+         * @return array of stdClass
+         */
+        public function get_batches($limit = 0)
+        {
+        }
+        /**
+         * Performs the database query to get the batches.
+         *
+         * @since 2.9.7
+         *
+         * @param string $table      The name of the table containing the batches.
+         * @param string $column     The name of column containing the batch key.
+         * @param string $key_column The name of the column containing the record ID.
+         * @param int    $limit      Number of batches to return.
+         * @param string $key        The prefix used by the batch key.
+         *
+         * @return array|object|stdClass[]|null
+         */
+        protected function get_batches_results($table, $column, $key_column, $limit, $key)
+        {
+        }
+        /**
+         * Sets the current_batch property.
+         *
+         * @since 2.9.4
+         *
+         * @param object|null $batch Null or the batch currently being processed.
+         *
+         * @return void
+         */
+        protected function set_current_batch($batch = null)
+        {
+        }
+        /**
+         * Gets the batch currently being processed.
+         *
+         * @since 2.9.4
+         *
+         * @return object|null
+         */
+        protected function get_current_batch()
+        {
+        }
+        /**
+         * Sets the current_task property.
+         *
+         * @since 2.9.9
+         *
+         * @param mixed|null $task Null or the task currently being processed.
+         *
+         * @return void
+         */
+        protected function set_current_task($task = null)
+        {
+        }
+        /**
+         * Gets the task currently being processed.
+         *
+         * @since 2.9.9
+         *
+         * @return mixed|null
+         */
+        protected function get_current_task()
         {
         }
         /**
@@ -13029,8 +13792,72 @@ namespace {
          * within server memory and time limit constraints.
          *
          * @since 2.2
+         *
+         * @return void|mixed
          */
         protected function handle()
+        {
+        }
+        /**
+         * Increments the item attempts property and updates the batch in the database.
+         *
+         * @since 2.9.9
+         *
+         * @param object $batch The current batch.
+         * @param int    $key   The key used to access the task in the batch.
+         * @param mixed  $task  The current task from the batch.
+         * @phpstan-return void
+         */
+        protected function increment_task_attempts(&$batch, $key, &$task)
+        {
+        }
+        /**
+         * Determines if the task can be processed based on its attempts property.
+         *
+         * @since 2.9.9
+         *
+         * @param mixed  $task     The task about to be processed.
+         * @param object $batch    The batch currently being processed.
+         * @param int    $task_num The number that identifies the task in the logs.
+         *
+         * @return bool
+         */
+        protected function can_process_task($task, $batch, $task_num)
+        {
+        }
+        /**
+         * Detects if an error occurred before the shutdown hook was triggered, and then triggers logging of the error details.
+         *
+         * @since 2.9.9
+         *
+         * @return void
+         * @phpstan-return void
+         */
+        public function shutdown_error_handler()
+        {
+        }
+        /**
+         * Logs the error.
+         *
+         * @since 2.9.9
+         *
+         * @param array $error The error returned by error_get_last().
+         *
+         * @return void
+         */
+        protected function handle_error($error)
+        {
+        }
+        /**
+         * Determines if a batch has been updated.
+         *
+         * @since 2.9.7
+         *
+         * @param stdClass $batch The batch object.
+         *
+         * @return bool
+         */
+        protected function has_batch_been_updated($batch)
         {
         }
         /**
@@ -13067,16 +13894,6 @@ namespace {
         {
         }
         /**
-         * Converts a shorthand byte value to an integer byte value.
-         *
-         * @param string $value A (PHP ini) byte value, either shorthand or ordinary.
-         *
-         * @return int An integer byte value.
-         */
-        protected function convert_hr_to_bytes($value)
-        {
-        }
-        /**
          * Time exceeded.
          *
          * @since 2.2
@@ -13101,12 +13918,34 @@ namespace {
         {
         }
         /**
+         * Called when background process has completed.
+         *
+         * @since 2.9.7
+         */
+        protected function completed()
+        {
+        }
+        /**
+         * Get the cron healthcheck interval in minutes.
+         *
+         * Default is 5 minutes, minimum is 1 minute.
+         *
+         * @since 2.9.7
+         *
+         * @return int
+         */
+        public function get_cron_interval()
+        {
+        }
+        /**
          * Schedule cron healthcheck
          *
          * @since 2.2
          *
          * @access public
+         *
          * @param mixed $schedules Schedules.
+         *
          * @return mixed
          */
         public function schedule_cron_healthcheck($schedules)
@@ -13121,6 +13960,16 @@ namespace {
          * @since 2.2
          */
         public function handle_cron_healthcheck()
+        {
+        }
+        /**
+         * Determines if the queue can be resumed based on how long ago it was paused.
+         *
+         * @since 2.9.7
+         *
+         * @return bool
+         */
+        protected function is_pause_expired()
         {
         }
         /**
@@ -13166,7 +14015,7 @@ namespace {
          *
          * @return false|int
          */
-        public function clear_queue($all_blogs_in_network = \false)
+        public function clear_queue($all_blogs_in_network = false)
         {
         }
         /**
@@ -13183,7 +14032,79 @@ namespace {
          *
          * @return mixed
          */
-        protected abstract function task($item);
+        abstract protected function task($item);
+        /**
+         * Maybe unserialize data, but not if an object.
+         *
+         * @since 2.9.7
+         *
+         * @param mixed      $data            Data to be unserialized.
+         * @param bool|array $allowed_classes Array of class names that can be unserialized.
+         *
+         * @return mixed
+         */
+        protected static function maybe_unserialize($data, $allowed_classes)
+        {
+        }
+        /**
+         * Should any processing continue?
+         *
+         * @since 2.9.7
+         *
+         * @return bool
+         */
+        public function should_continue()
+        {
+        }
+        /**
+         * Get the string used to identify this type of background process.
+         *
+         * @since 2.9.7
+         *
+         * @return string
+         */
+        public function get_identifier()
+        {
+        }
+        /**
+         * Return the current background process chain's ID.
+         *
+         * @since 2.9.7
+         * @since 2.9.8 Added the Ajax request action check.
+         *
+         * If the chain's ID hasn't been set before this function is first used,
+         * and hasn't been passed as a query arg during dispatch,
+         * the chain ID will be generated before being returned.
+         *
+         * @return string
+         */
+        public function get_chain_id()
+        {
+        }
+        /**
+         * Filters the query arguments used during an async request.
+         *
+         * @since 2.9.7
+         *
+         * @param array $args Current query args.
+         *
+         * @return array
+         */
+        public function filter_dispatch_query_args($args)
+        {
+        }
+        /**
+         * Filters the post arguments used during an async request.
+         *
+         * @since 2.9.10
+         *
+         * @param array $args Current post args.
+         *
+         * @return array
+         */
+        public function filter_dispatch_post_args($args)
+        {
+        }
         /**
          * Allows filtering of the form before the task is processed.
          *
@@ -13230,16 +14151,42 @@ namespace {
          *
          * @return bool|int
          */
-        public function delete_batches($all_blogs_in_network = \false)
+        public function delete_batches($all_blogs_in_network = false)
+        {
+        }
+        /**
+         * Writes a message to the core log.
+         *
+         * @since 2.9.7
+         *
+         * @param string $message The message to be logged.
+         *
+         * @return void
+         */
+        public function log_debug($message)
+        {
+        }
+        /**
+         * Writes an error message to the core log.
+         *
+         * @since 2.9.9
+         *
+         * @param string $message The message to be logged.
+         *
+         * @return void
+         */
+        public function log_error($message)
         {
         }
     }
+}
+namespace {
     /**
      * GF_Feed_Processor Class.
      *
      * @since 2.2
      */
-    class GF_Feed_Processor extends \GF_Background_Process
+    class GF_Feed_Processor extends \Gravity_Forms\Gravity_Forms\Async\GF_Background_Process
     {
         /**
          * The action name.
@@ -13249,6 +14196,14 @@ namespace {
          * @var    string
          */
         protected $action = 'gf_feed_processor';
+        /**
+         * Indicates if the task uses an array that supports the attempts key.
+         *
+         * @since 2.9.9
+         *
+         * @var bool
+         */
+        protected $supports_attempts = \true;
         /**
          * Get instance of this class.
          *
@@ -13262,21 +14217,49 @@ namespace {
         {
         }
         /**
-         * Task
+         * Processes the task.
          *
          * @since  2.2
+         * @since  2.9.4 Updated to use the add-on save_entry_feed_status(), post_process_feed(), and fullfill_entry() methods.
+         *
          * @access protected
          *
-         * Override this method to perform any actions required on each
-         * queue item. Return the modified item for further processing
-         * in the next pass through. Or, return false to remove the
-         * item from the queue.
+         * @param array $item {
+         *     The task arguments.
          *
-         * @param array $item The task arguments: addon, feed, entry_id, and form_id.
+         *     @type string $addon    The add-on class name.
+         *     @type array  $feed     The feed.
+         *     @type int    $entry_id The entry ID.
+         *     @type int    $form_id  The form ID.
+         *     @type int    $attempts The number of attempts. Only included if the task has been processed before.
+         * }
+         *
+         * @return bool|array
+         * @phpstan-param array{
+         *   addon?: string,
+         *   feed?: array,
+         *   entry_id?: int,
+         *   form_id?: int,
+         *   attempts?: int,
+         * } $item
+         */
+        protected function task($item)
+        {
+        }
+        /**
+         * Determines if the task can be processed based on its attempts property.
+         *
+         * Overridden, returning true, so the existing feed-specific filters are used instead during task().
+         *
+         * @since 2.9.9
+         *
+         * @param mixed  $task     The task about to be processed.
+         * @param object $batch    The batch currently being processed.
+         * @param int    $task_num The number that identifies the task in the logs.
          *
          * @return bool
          */
-        protected function task($item)
+        protected function can_process_task($task, $batch, $task_num)
         {
         }
         /**
@@ -13295,25 +14278,46 @@ namespace {
         {
         }
         /**
-         * Custom error handler to convert any errors to an exception.
+         * Logs the error that occurred during feed processing.
          *
-         * @since  2.2
-         * @since  2.6.5 Removed the $context param.
-         * @access public
+         * @since 2.9.8
          *
-         * @param int    $number  The level of error raised.
-         * @param string $string  The error message, as a string.
-         * @param string $file    The filename the error was raised in.
-         * @param int    $line    The line number the error was raised at.
-         * @param array  $context An array that points to the active symbol table at the point the error occurred.
+         * @param array $error The error returned by error_get_last().
          *
-         * @throws ErrorException
-         *
-         * @return false
+         * @return void
+         * @phpstan-return void
          */
-        public function custom_error_handler($number, $string, $file, $line)
+        protected function handle_error($error)
         {
         }
+        /**
+         * Increments the item attempts property and updates the batch in the database.
+         *
+         * @depecated 2.9.9
+         * @remove-in 3.1
+         *
+         * @since 2.4
+         * @since 2.9.4 Updated to use get_current_branch() instead of making a db request to get the batch.
+         *
+         * @param array $item {
+         *     The task arguments.
+         *
+         *     @type string $addon    The add-on class name.
+         *     @type array  $feed     The feed.
+         *     @type int    $entry_id The entry ID.
+         *     @type int    $form_id  The form ID.
+         *     @type int    $attempts The number of processing attempts. Only included if the task has been processed before.
+         * }
+         *
+         * @return array
+         * @phpstan-param array{
+         *   addon?: string,
+         *   feed?: array,
+         *   entry_id?: int,
+         *   form_id?: int,
+         *   attempts?: int,
+         * } $item
+         */
         protected function increment_attempts($item)
         {
         }
@@ -13559,6 +14563,19 @@ namespace {
         {
         }
         /**
+         * Reprocess feeds and triggers gform_post_payment_status_change hook when the payment status changes.
+         *
+         * @since 2.9.20
+         *
+         * @param int    $entry_id        The entry ID whose payment status has changed.
+         * @param string $previous_status The previous payment status.
+         *
+         * @phpstan-return void
+         */
+        public function payment_status_changed($entry_id, $previous_status)
+        {
+        }
+        /**
          * Triggers processing of delayed feeds for other add-ons.
          *
          * @since 2.4.13
@@ -13652,14 +14669,15 @@ namespace {
          * Handle the entry meta conditional logic confirmations. Adds support for the payment_status entry field to the confirmation condition logic setting.
          *
          * @since 2.9.1
+         * @since 2.9.19 Added the $context param.
          *
          * @param array $entry_meta      The entry meta.
          * @param array $form            The form object.
-         * @param int   $confirmation_id The confirmation ID.
+         * @param string $context       The context indicating where the payment statuses will be used. Possible values: confirmation, feed, pre_evaluate.
          *
          * @return array Returns the entry meta, with the payment_status field added to it.
          */
-        public function maybe_add_payment_status_to_meta($entry_meta, $form)
+        public function maybe_add_payment_status_to_meta($entry_meta, $form, $context = '')
         {
         }
         /**
@@ -13671,9 +14689,9 @@ namespace {
          *    'Processing' => __( 'Processing', 'gravityforms' ),
          * );
          *
-         * @since 2.9.1
+         * @since 2.9.19
          *
-         * @param array $form The form object.
+         * @param array  $form    The form object.
          *
          * @return array Return an array with the payment statuses that can be used in conditional logic. Return an empty array to disable this feature.
          */
@@ -13759,6 +14777,17 @@ namespace {
          *         @type int    $amount         The amount of the captured payment, if successful.
          *     }
          * }
+         * @phpstan-return array{
+         *   is_authorized: bool,
+         *   error_message: string,
+         *   transaction_id: string,
+         *   captured_payment: array{
+         *     is_success: bool,
+         *     error_message: string,
+         *     transaction_id: string,
+         *     amount: int,
+         *   },
+         * }
          */
         public function authorize($feed, $submission_data, $form, $entry)
         {
@@ -13788,6 +14817,13 @@ namespace {
          *     @type string $transaction_id The transaction ID of the captured payment.
          *     @type int    $amount         The amount of the captured payment, if successful.
          *     @type string $payment_method The card issuer.
+         * }
+         * @phpstan-return array{
+         *   is_success: bool,
+         *   error_message: string,
+         *   transaction_id: string,
+         *   amount: int,
+         *   payment_method: string,
          * }
          */
         public function capture($authorization, $feed, $submission_data, $form, $entry)
@@ -13839,6 +14875,18 @@ namespace {
          *     'transaction_id' => 'xxx',
          *     'amount'         => 20
          * ]
+         * @phpstan-return array{
+         *   is_success: bool,
+         *   error_message: string,
+         *   subscription_id: string,
+         *   amount: int,
+         *   captured_payment: array{
+         *     is_success: bool,
+         *     error_message: string,
+         *     transaction_id: string,
+         *     amount: int,
+         *   },
+         * }
          */
         public function subscribe($feed, $submission_data, $form, $entry)
         {
@@ -14108,6 +15156,12 @@ namespace {
          *     @type float $trial          The trial fee, if any.
          *     @type float $discounts      Discounts applied, if any.
          * }
+         * @phpstan-return array{
+         *   payment_amount: float,
+         *   setup_fee: float,
+         *   trial: float,
+         *   discounts: float,
+         * }
          */
         public function get_order_data($feed, $form, $entry)
         {
@@ -14158,6 +15212,7 @@ namespace {
          * @uses    GFPaymentAddOn::post_callback()
          *
          * @return void
+         * @phpstan-return void
          */
         public function maybe_process_callback()
         {
@@ -14281,6 +15336,31 @@ namespace {
          * @param array $action
          */
         public function post_payment_action($entry, $action)
+        {
+        }
+        /**
+         * Reprocesses feeds that are configured with Payment Status conditional logic.
+         *
+         * @since 2.9.20
+         *
+         * @param array $entry The entry object.
+         * @param array $form  The form object.
+         */
+        public function reprocess_feeds($entry)
+        {
+        }
+        /**
+         * Filters out feeds that are not configured with Payment Status conditional logic.
+         *
+         * @since 2.9.20
+         *
+         * @param array $feeds The feeds to be processed.
+         * @param array $entry The entry currently being processed.
+         * @param array $form  The form currently being processed.
+         *
+         * @return array The filtered feeds that are configured with Payment Status conditional logic.
+         */
+        public function get_feeds_to_reprocess($feeds, $entry, $form)
         {
         }
         // -------- Cron --------------------
@@ -14518,6 +15598,7 @@ namespace {
          * @param bool $is_ajax
          *
          * @return void
+         * @phpstan-return void
          */
         public function register_creditcard_token_script($form, $field_values, $is_ajax)
         {
@@ -14624,6 +15705,31 @@ namespace {
         {
         }
         public function get_supports_callback()
+        {
+        }
+        /**
+         * Callback for gform_entries_filter_count_queries; registers the db queries to be used to get the entry counts for the filters.
+         *
+         * @since 2.9.16.
+         *
+         * @param array $queries The filter count queries.
+         *
+         * @return array
+         */
+        public static function entries_filter_count_queries($queries)
+        {
+        }
+        /**
+         * Callback for gform_filter_links_entry_list; registers the filter links to be displayed on the entries list page.
+         *
+         * @since 2.9.16
+         *
+         * @param array $filter_links   The filter links to be displayed.
+         * @param array $form           The form that the entries are being viewed for.
+         * @param bool  $include_counts Indicates if the entry counts should be included. True for above the entries list table. False for the screen options.
+         * @param array $counts         The number of entries that match the filters when $include_counts is true.
+         */
+        public static function filter_links_entry_list($filter_links, $form, $include_counts, $counts)
         {
         }
     }
@@ -14755,6 +15861,10 @@ namespace Gravity_Forms\Gravity_Forms\Ajax {
          * Handles the form validation AJAX requests. Uses the global $_POST array and sends the form validation result as a JSON response.
          *
          * @since 2.9.0
+         *
+         * @deprecated 2.9.9 Use GFAPI::validate_form() instead.
+         * @remove-in 3.1.0
+         * @phpstan-return never
          */
         public function validate_form()
         {
@@ -14763,8 +15873,22 @@ namespace Gravity_Forms\Gravity_Forms\Ajax {
          * Handles the form submission AJAX requests. Uses the global $_POST array and sends the form submission result as a JSON response.
          *
          * @since 2.9.0
+         * @phpstan-return void
          */
         public function submit_form()
+        {
+        }
+        /**
+         * Returns the submission type based on the target and source page numbers.
+         *
+         * @since 2.9.7
+         *
+         * @param int $target_page The target page number.
+         * @param int $source_page The source page number.
+         *
+         * @return string The submission type. Possible values are SUBMISSION_TYPE_SUBMIT, SUBMISSION_TYPE_NEXT, SUBMISSION_TYPE_PREVIOUS, and SUBMISSION_TYPE_SAVE_AND_CONTINUE.
+         */
+        public function get_submission_type($target_page, $source_page)
         {
         }
         /**
@@ -14819,7 +15943,7 @@ namespace Gravity_Forms\Gravity_Forms {
          *
          * @return void
          */
-        public abstract function register(\Gravity_Forms\Gravity_Forms\GF_Service_Container $container);
+        abstract public function register(\Gravity_Forms\Gravity_Forms\GF_Service_Container $container);
         /**
          * Noop by default - used to initialize hooks and filters for the given module.
          */
@@ -14835,6 +15959,7 @@ namespace Gravity_Forms\Gravity_Forms {
          * @since 2.7.1
          *
          * @param array $args
+         * @phpstan-return void
          */
         public function register_app($args)
         {
@@ -14982,7 +16107,7 @@ namespace Gravity_Forms\Gravity_Forms\Config {
          *
          * @return array
          */
-        protected abstract function data();
+        abstract protected function data();
         /**
          * Override this method to add enable ajax loading for a specific config path.
          * To enable loading data() via ajax, check if $config_path is one of the paths that are provided by the config. If so, return true.
@@ -15082,6 +16207,7 @@ namespace Gravity_Forms\Gravity_Forms\Config {
          * @since 2.9.0
          *
          * @return void
+         * @phpstan-return never
          */
         public static function validate_ajax()
         {
@@ -15183,6 +16309,7 @@ namespace {
          * @param array $form_ids An array of form IDs to delete.
          *
          * @return void
+         * @phpstan-return void
          */
         public static function delete_forms($form_ids)
         {
@@ -15293,7 +16420,7 @@ namespace {
          *
          * @return array|WP_Error Either an array of new form IDs or a WP_Error instance.
          */
-        public static function add_forms($forms)
+        public static function add_forms($forms, $continue_on_error = \false)
         {
         }
         /**
@@ -15551,7 +16678,7 @@ namespace {
          * @param string $property The property of the Entry object to be updated.
          * @param mixed  $value    The value to which the property should be set.
          *
-         * @return bool Whether the entry property was updated successfully.
+         * @return int|false The number of rows updated, or false on error or if there is a submissions block.
          */
         public static function update_entry_property($entry_id, $property, $value)
         {
@@ -15688,22 +16815,18 @@ namespace {
          * 'resume_token' => string '045f941cc4c04d479556bab1db6d3495'
          *
          * @since  Unknown
-         * @access public
+         * @since  2.9.9 Added the optional $initiated_by param.
          *
-         * @uses GFAPI::get_form()
-         * @uses GFCommon::get_base_path()
-         * @uses GFFormDisplay::process_form()
-         * @uses GFFormDisplay::replace_save_variables()
-         *
-         * @param int $form_id The Form ID
-         * @param array $input_values An array of values. Not $_POST, that will be automatically merged with the $input_values.
-         * @param array $field_values Optional.
-         * @param int $target_page Optional.
-         * @param int $source_page Optional.
+         * @param int      $form_id      The Form ID
+         * @param array    $input_values An array of values. Not $_POST, that will be automatically merged with the $input_values.
+         * @param array    $field_values Optional. An array of dynamic population parameter keys with their corresponding values used to populate the fields.
+         * @param int      $target_page  Optional. For multi-page forms to indicate which page is to be loaded if the current page passes validation. Default is 0, indicating the last or only page is being submitted.
+         * @param int      $source_page  Optional. For multi-page forms to indicate which page of the form was just submitted. Default is 1.
+         * @param null|int $initiated_by Optional. The process that initiated the submission. Supported integers are 1 (aka GFFormDisplay::SUBMISSION_INITIATED_BY_WEBFORM) or 2 (aka GFFormDisplay::SUBMISSION_INITIATED_BY_API). Defaults to GFFormDisplay::SUBMISSION_INITIATED_BY_API.
          *
          * @return array|WP_Error An array containing the result of the submission.
          */
-        public static function submit_form($form_id, $input_values, $field_values = array(), $target_page = 0, $source_page = 1)
+        public static function submit_form($form_id, $input_values, $field_values = array(), $target_page = 0, $source_page = 1, $initiated_by = \null)
         {
         }
         /**
@@ -15889,7 +17012,7 @@ namespace {
          *
          * @return false|array
          */
-        public static function maybe_process_feeds($entry, $form, $addon_slug = '', $reset_meta = \false)
+        public static function maybe_process_feeds($entry, $form, $addon_slug = '', $reset_meta = \false, $bypass_feed_delay = \false)
         {
         }
         /**
@@ -15916,8 +17039,80 @@ namespace {
          * @param null|int       $form_id    The form ID of the entry (optional, saves extra query if passed when creating the metadata).
          *
          * @return void
+         * @phpstan-return void
          */
         public static function update_processed_feeds_meta($entry_id, $addon_slug, $value, $form_id = \null)
+        {
+        }
+        /**
+         * Returns the key used when saving/retrieving the feed status entry meta.
+         *
+         * @since 2.9.4
+         *
+         * @param int $feed_id The feed ID.
+         *
+         * @return string
+         */
+        public static function get_entry_feed_status_key($feed_id)
+        {
+        }
+        /**
+         * Retrieves the feed processing status for the specified entry from the "feed_{$feed_id}_status" meta.
+         *
+         * @since 2.9.4
+         *
+         * @param int  $entry_id              The entry ID.
+         * @param int  $feed_id               The feed ID.
+         * @param bool $return_latest         Indicates if only the latest attempt should be returned. Default is to return all attempts.
+         * @param bool $return_latest_details Indicates if the details array of the latest attempt should be returned instead of just the status string.
+         *
+         * @return array|string
+         */
+        public static function get_entry_feed_status($entry_id, $feed_id, $return_latest = \false, $return_latest_details = \false)
+        {
+        }
+        /**
+         * Updates or deletes the "feed_{$feed_id}_status" meta for the specified entry.
+         *
+         * @since 2.9.4
+         *
+         * @param int        $entry_id The entry ID.
+         * @param int        $feed_id  The feed ID.
+         * @param array|null $status   {
+         *     The status array to be appended to the metadata or null to delete the metadata.
+         *
+         *     @type int        $timestamp The timestamp for the feed processing attempt.
+         *     @type string     $status    The status: success or failed.
+         *     @type int|string $code      The error code.
+         *     @type string     $message   The error message.
+         *     @type mixed      $data      Additional data relating to the error.
+         * }
+         * @param null|int   $form_id  The form ID of the entry (optional, saves extra query if passed when creating the metadata).
+         *
+         * @return void
+         * @phpstan-param null|array{
+         *   timestamp?: int,
+         *   status?: string,
+         *   code?: int|string,
+         *   message?: string,
+         *   data?: mixed,
+         * } $status
+         * @phpstan-return void
+         */
+        public static function update_entry_feed_status($entry_id, $feed_id, $status, $form_id = \null)
+        {
+        }
+        /**
+         * Retrieves the name of the given feed.
+         *
+         * @since 2.9.9
+         *
+         * @param array  $feed The feed.
+         * @param string $key  Optional. The key used to store the name.
+         *
+         * @return string
+         */
+        public static function get_feed_name($feed, $key = '')
         {
         }
         // NOTIFICATIONS ----------------------------------------------
@@ -16078,7 +17273,7 @@ namespace Gravity_Forms\Gravity_Forms\Assets {
          *
          * @return mixed
          */
-        protected abstract function do_enqueue($handle);
+        abstract protected function do_enqueue($handle);
         /**
          * Get the dependency items.
          *
@@ -16095,6 +17290,7 @@ namespace Gravity_Forms\Gravity_Forms\Assets {
          * @since 2.6
          *
          * @param $items
+         * @phpstan-return void
          */
         public function enqueue()
         {
@@ -16271,13 +17467,13 @@ namespace {
          *
          * @return void
          */
-        public abstract function enqueue_asset();
+        abstract public function enqueue_asset();
         /**
          * Handle printing the asset this class represents (e.g., using wp_print_scripts() or wp_print_styles())
          *
          * @return void
          */
-        public abstract function print_asset();
+        abstract public function print_asset();
     }
     /**
      * Class GF_Script_Asset
@@ -16303,6 +17499,7 @@ namespace {
          * @since 2.5
          *
          * @return void
+         * @phpstan-return void
          */
         public function enqueue_asset()
         {
@@ -16423,7 +17620,7 @@ namespace Gravity_Forms\Gravity_Forms\Async {
      *
      * @since 2.6.9
      */
-    class GF_Notifications_Processor extends \GF_Background_Process
+    class GF_Notifications_Processor extends \Gravity_Forms\Gravity_Forms\Async\GF_Background_Process
     {
         /**
          * The action name.
@@ -16433,6 +17630,14 @@ namespace Gravity_Forms\Gravity_Forms\Async {
          * @var string
          */
         protected $action = 'gf_notifications_processor';
+        /**
+         * Indicates if the task uses an array that supports the attempts key.
+         *
+         * @since 2.9.9
+         *
+         * @var bool
+         */
+        protected $supports_attempts = true;
         /**
          * Processes the task.
          *
@@ -16459,6 +17664,107 @@ namespace Gravity_Forms\Gravity_Forms\Async {
          * @return bool
          */
         public function is_enabled($notifications, $form, $entry, $event = 'form_submission', $data = array())
+        {
+        }
+    }
+}
+namespace Gravity_Forms\Gravity_Forms\Author_Select {
+    /**
+     * Config items for the Author Select dropdown
+     *
+     * @since 2.9.20
+     */
+    class GF_Author_Select_Config extends \Gravity_Forms\Gravity_Forms\Config\GF_Config
+    {
+        protected $name = 'gform_admin_config';
+        protected $script_to_localize = 'gform_gravityforms_admin_vendors';
+        /**
+         * Constructor
+         *
+         * @since 2.9.20
+         *
+         * @param GF_Config_Data_Parser $data_parser
+         */
+        public function __construct(\Gravity_Forms\Gravity_Forms\Config\GF_Config_Data_Parser $data_parser)
+        {
+        }
+        /**
+         * Only enqueue in the form editor
+         *
+         * @since 2.9.20
+         *
+         * @return bool
+         */
+        public function should_enqueue()
+        {
+        }
+        /**
+         * Config data for the author select dropdown
+         *
+         * @since 2.9.20
+         *
+         * @return array
+         */
+        public function data()
+        {
+        }
+    }
+    /**
+     * Class GF_Author_Select_Service_Provider
+     *
+     * Service provider for the Author Select functionality
+     *
+     * @since 2.9.20
+     */
+    class GF_Author_Select_Service_Provider extends \Gravity_Forms\Gravity_Forms\GF_Service_Provider
+    {
+        const AUTHOR_SELECT = 'author_select';
+        const AUTHOR_SELECT_CONFIG = 'author_select_config';
+        /**
+         * Register services to the container
+         *
+         * @since 2.9.20
+         *
+         * @param GF_Service_Container $container
+         */
+        public function register(\Gravity_Forms\Gravity_Forms\GF_Service_Container $container)
+        {
+        }
+        /**
+         * Initialize any actions or hooks
+         *
+         * @since 2.9.20
+         *
+         * @param GF_Service_Container $container
+         */
+        public function init(\Gravity_Forms\Gravity_Forms\GF_Service_Container $container)
+        {
+        }
+    }
+    /**
+     * Class GF_Author_Select
+     *
+     * Handles AJAX requests for the author select dropdown in the form editor
+     *
+     * @since 2.9.20
+     */
+    class GF_Author_Select
+    {
+        /**
+         * Initialize the author select functionality
+         *
+         * @since 2.9.20
+         */
+        public function init()
+        {
+        }
+        /**
+         * Handle AJAX request to get users
+         *
+         * @since 2.9.20
+         * @phpstan-return never
+         */
+        public function ajax_get_users()
         {
         }
     }
@@ -16602,6 +17908,7 @@ namespace {
          * @since  2.4.10
          *
          * @uses   GF_Block::scripts()
+         * @phpstan-return void
          */
         public function register_scripts()
         {
@@ -16652,6 +17959,7 @@ namespace {
          * Enqueue block styles.
          *
          * @since  2.4.10
+         * @phpstan-return void
          */
         public function register_styles()
         {
@@ -16931,6 +18239,7 @@ namespace {
          * Redirect the user to the newly-created Confirmation after save.
          *
          * @since 2.5
+         * @phpstan-return void
          */
         public static function redirect_after_valid_save($query_arg)
         {
@@ -17137,6 +18446,7 @@ namespace {
          * @since  Unknown
          *
          * @param array $item The list table item.
+         * @phpstan-return void
          */
         public function column_cb($item)
         {
@@ -17181,6 +18491,7 @@ namespace {
          * @since 2.5
          *
          * @param string $which
+         * @phpstan-return void
          */
         protected function extra_tablenav($which)
         {
@@ -17189,7 +18500,7 @@ namespace {
     /**
      * GF_Background_Upgrader Class.
      */
-    class GF_Background_Upgrader extends \GF_Background_Process
+    class GF_Background_Upgrader extends \Gravity_Forms\Gravity_Forms\Async\GF_Background_Process
     {
         /**
          * @var string
@@ -17257,6 +18568,7 @@ namespace {
          * If the request is for a Gravity Forms file download then validate and deliver.
          *
          * @since 2.0
+         * @phpstan-return void
          */
         public static function maybe_process()
         {
@@ -17405,6 +18717,7 @@ namespace Gravity_Forms\Gravity_Forms {
          * @since 2.5
          *
          * @param GF_Service_Provider $provider
+         * @phpstan-return void
          */
         public function add_provider(\Gravity_Forms\Gravity_Forms\GF_Service_Provider $provider)
         {
@@ -17469,6 +18782,7 @@ namespace {
          * @since 2.8.17
          *
          * @return void
+         * @phpstan-return void
          */
         public function set_license_network_option()
         {
@@ -17481,6 +18795,7 @@ namespace {
          * @param string $previous_version The previous version.
          *
          * @return void
+         * @phpstan-return void
          */
         public function sync_auto_updates($previous_version)
         {
@@ -17733,6 +19048,7 @@ namespace {
         }
         /**
          * Upgrade routine from gravity forms version 2.0.4.7 and below
+         * @phpstan-return void
          */
         protected function post_upgrade_schema_2047()
         {
@@ -17761,6 +19077,7 @@ namespace {
          * @param string $index The index to be dropped.
          *
          * @return void
+         * @phpstan-return void
          */
         public function drop_index($table, $index)
         {
@@ -17933,6 +19250,7 @@ namespace {
          * Adds dismissible admin notices.
          *
          * @since 2.3
+         * @phpstan-return void
          */
         public function add_post_upgrade_admin_notices()
         {
@@ -18025,6 +19343,7 @@ namespace {
          * Update the usage data (call version.php in Gravity Manager). We will replace it once we have statistics API endpoints.
          *
          * @since 2.5
+         * @phpstan-return void
          */
         public function update_site_data()
         {
@@ -18385,6 +19704,7 @@ namespace Gravity_Forms\Gravity_Forms {
          * Refreshes the cached TranslationsPress data, if expired.
          *
          * @since 2.5.6
+         * @phpstan-return void
          */
         public static function refresh_all_translations()
         {
@@ -18420,6 +19740,7 @@ namespace Gravity_Forms\Gravity_Forms {
          * @since 2.5.6
          *
          * @param string $locale The locale when the site locale is changed or an empty string to install all the user available locales.
+         * @phpstan-return void
          */
         public function install($locale = '')
         {
@@ -18431,6 +19752,7 @@ namespace Gravity_Forms\Gravity_Forms {
          *
          * @param object $upgrader_object WP_Upgrader Instance.
          * @param array  $hook_extra      Item update data.
+         * @phpstan-return void
          */
         public function upgrader_process_complete($upgrader_object, $hook_extra)
         {
@@ -18798,6 +20120,7 @@ namespace Gravity_Forms\Gravity_Forms\Duplicate_Submissions {
         }
         /**
          * Redirect to a $_GET request if we detect a dupe submission from Safari.
+         * @phpstan-return void
          */
         public function maybe_handle_safari_redirect()
         {
@@ -19154,6 +20477,7 @@ namespace Gravity_Forms\Gravity_Forms\Embed_Form\Endpoints {
          * @since 2.6
          *
          * @return void
+         * @phpstan-return never
          */
         public function handle()
         {
@@ -19188,6 +20512,7 @@ namespace Gravity_Forms\Gravity_Forms\Embed_Form\Endpoints {
          * @since 2.6
          *
          * @return void
+         * @phpstan-return never
          */
         public function handle()
         {
@@ -19735,6 +21060,7 @@ namespace {
          * @param mixed $value
          *
          * @return void
+         * @phpstan-return void
          */
         public function set_context_property($property_key, $value)
         {
@@ -20070,6 +21396,7 @@ namespace {
          * @param bool  $require_complex_message Indicates if the field must have a complex validation message for the error to be set.
          *
          * @return void
+         * @phpstan-return void
          */
         public function set_required_error($value, $require_complex_message = \false)
         {
@@ -20133,12 +21460,15 @@ namespace {
         /**
          * Retrieve the input value on submission.
          *
+         * @since 1.9
+         * @since 2.9.17 Updated to return null if the field failed state validation.
+         *
          * @param string    $standard_name            The input name used when accessing the $_POST.
          * @param string    $custom_name              The dynamic population parameter name.
          * @param array     $field_values             The dynamic population parameter names with their corresponding values to be populated.
          * @param bool|true $get_from_post_global_var Whether to get the value from the $_POST array as opposed to $field_values.
          *
-         * @return array|string
+         * @return array|string|null
          */
         public function get_input_value_submission($standard_name, $custom_name = '', $field_values = array(), $get_from_post_global_var = \true)
         {
@@ -20211,13 +21541,16 @@ namespace {
          *
          * Return a value that's safe to display for the context of the given $format.
          *
+         * @since 1.9
+         * @since 2.9.14 Updated to display an inline error message on the entry detail page for array-based values.
+         *
          * @param string|array $value    The field value.
          * @param string       $currency The entry currency code.
          * @param bool|false   $use_text When processing choice based fields should the choice text be returned instead of the value.
          * @param string       $format   The format requested for the location the merge is being used. Possible values: html, text or url.
          * @param string       $media    The location where the value will be displayed. Possible values: screen or email.
          *
-         * @return string
+         * @return string|false
          */
         public function get_value_entry_detail($value, $currency = '', $use_text = \false, $format = 'html', $media = 'screen')
         {
@@ -20986,6 +22319,7 @@ namespace {
          * @param array        $form  The Form Object currently being processed.
          *
          * @return void
+         * @phpstan-return void
          */
         public function validate($value, $form)
         {
@@ -22610,6 +23944,7 @@ namespace {
          * and updates the field to have them if they do not.
          *
          * @since 2.5.7
+         * @phpstan-return void
          */
         public function maybe_update_inputs()
         {
@@ -22706,7 +24041,30 @@ namespace {
         public function is_value_submission_array()
         {
         }
+        /**
+         * Validates the field value(s).
+         *
+         * @since 1.9
+         * @since 2.9.15 Updated to use $this->is_email_rejected().
+         *
+         * @param string $value The value to be validated.
+         * @param array  $form  The form being processed.
+         *
+         * @return void
+         */
         public function validate($value, $form)
+        {
+        }
+        /**
+         * Determines if the given email address matches a value on the rejectable values list.
+         *
+         * @since 2.9.15
+         *
+         * @param string $email The value to be checked.
+         *
+         * @return bool
+         */
+        public function is_email_rejected($email)
         {
         }
         public function get_field_input($form, $value = '', $entry = \null)
@@ -22837,18 +24195,128 @@ namespace {
         public function get_form_editor_field_icon()
         {
         }
-        function get_form_editor_field_settings()
+        /**
+         * Returns the class names of the settings which should be available on the field in the form editor.
+         *
+         * @since 1.9
+         * @since 2.9.18 Updated to include the dynamic population setting.
+         *
+         * @return string[]
+         */
+        public function get_form_editor_field_settings()
         {
         }
+        /**
+         * Determines if the file type and extension check should be disabled.
+         *
+         * @since 2.9.18
+         *
+         * @return bool
+         */
+        public function is_check_type_and_ext_disabled()
+        {
+        }
+        /**
+         * Returns the maximum file size in bytes.
+         *
+         * @since 2.9.18
+         *
+         * @return int
+         */
+        public function get_max_file_size_bytes()
+        {
+        }
+        /**
+         * Returns an array of cleaned allowed extensions.
+         *
+         * @since 2.9.18
+         *
+         * @return array
+         */
+        public function get_clean_allowed_extensions()
+        {
+        }
+        /**
+         * Returns the file size validation message.
+         *
+         * @since 2.9.18
+         *
+         * @return string
+         */
+        public function get_size_validation_message()
+        {
+        }
+        /**
+         * Validates the given file.
+         *
+         * @since 2.9.18
+         *
+         * @param array $file   The file to validate.
+         * @param bool  $is_new Whether the file is new (from $_FILES) or an existing file (from GFFormsModel::$uploaded_files).
+         *
+         * @return array|false Returns an array containing the sanitized file name and validation message when invalid, or false when valid.
+         */
+        public function is_invalid_file($file, $is_new = \true)
+        {
+        }
+        /**
+         * Validates the field value(s).
+         *
+         * @since 1.9
+         * @since 2.9.18 Updated to use $this->get_submission_files() & $this->is_valid_file().
+         *
+         * @param string $value Empty or the JSON encoded array of files for an existing entry.
+         * @param array  $form  The form being processed.
+         *
+         * @return void
+         * @phpstan-return void
+         */
         public function validate($value, $form)
         {
         }
         public function get_first_input_id($form)
         {
         }
+        /**
+         * Returns the field inner markup.
+         *
+         * @since 1.9
+         * @since 2.9.18 Updated to use $this->get_clean_allowed_extensions(), $this->get_max_file_size_bytes(), and $this->get_submission_files_for_preview().
+         *
+         * @param array        $form  The Form Object currently being processed.
+         * @param string|array $value The field value. From default/dynamic population, $_POST, or a resumed incomplete submission.
+         * @param null|array   $entry Null or the Entry Object currently being edited.
+         *
+         * @return string
+         */
         public function get_field_input($form, $value = '', $entry = \null)
         {
         }
+        /**
+         * Is the given value considered empty for this field.
+         *
+         * @since 2.9.18
+         *
+         * @param string|array $value The value to check.
+         *
+         * @return bool
+         */
+        public function is_value_empty($value)
+        {
+        }
+        /**
+         * Used to determine the required validation result.
+         *
+         * @since 1.9
+         * @since 2.7.1  Updated to validate multifile uploads exist in the tmp folder.
+         * @since 2.7.4  Added the gform_validate_required_file_exists filter.
+         * @since 2.9.2  Updated to use GFFormsModel::get_tmp_upload_location().
+         * @since 2.9.18 Updated to use $this->get_submission_files().
+         *
+         * @param int $form_id The ID of the form currently being processed.
+         *
+         * @return bool
+         */
         public function is_value_submission_empty($form_id)
         {
         }
@@ -22856,6 +24324,8 @@ namespace {
          * Remove invalid file from the uploaded files array.
          *
          * @since 2.7.4
+         * @deprecated 2.9.18
+         * @remove-in 3.1
          *
          * @param $input_name
          * @param $key
@@ -22865,18 +24335,34 @@ namespace {
         public function unset_uploaded_file($input_name, $key)
         {
         }
+        /**
+         * Returns the value to be saved to the entry.
+         *
+         * @since 1.9
+         * @since 2.9.18 Updated to cache the entry and form in context properties.
+         *
+         * @param string $value      The value to be saved.
+         * @param array  $form       The form currently being processed.
+         * @param string $input_name The input name used when accessing the $_POST.
+         * @param int    $lead_id    The ID of the entry currently being saved.
+         * @param array  $lead       The entry properties and values that have already been saved for the current submission.
+         *
+         * @return string
+         */
         public function get_value_save_entry($value, $form, $input_name, $lead_id, $lead)
         {
         }
         /**
-         * Get the value of the multifile input.
+         * Gets the JSON encoded array of file URLs to be saved for the multifile enabled field.
          *
-         * @since 2.6.8 Added $entry_id parameter.
+         * @since 1.9
+         * @since 2.6.8  Added $entry_id parameter.
+         * @since 2.9.18 Updated to use $this->get_submission_files() and $this->filter_submission_files_pre_save().
          *
-         * @param int    $form_id    ID of the form
-         * @param string $input_name Name of the input (input_1)
-         * @param string $value      Value of the input
-         * @param int    $entry_id   ID of the entry
+         * @param int    $form_id    ID of the form.
+         * @param string $input_name Name of the input (e.g. input_1).
+         * @param string $value      Value of the input.
+         * @param int    $entry_id   ID of the entry.
          *
          * @return string
          */
@@ -22887,6 +24373,7 @@ namespace {
          * Check existing entry for the file to re-use its URL rather than recreating as the date may be different.
          *
          * @since 2.6.8
+         * @since 2.9.18 Updated to support dynamically populated file URLs.
          *
          * @param int    $entry_id   The id of the current entry
          * @param string $input_name The name of the input field (input_1)
@@ -22902,6 +24389,7 @@ namespace {
          * any which still exist (i.e., haven't been deleted using the UI).
          *
          * @since 2.5.8
+         * @since 2.9.18 Updated to use $this->get_submission_files() and deprecated the $form_id and $input_name params.
          *
          * @param string $value      A comma-delimited list of file paths.
          * @param int    $form_id    The form ID for this entry.
@@ -22909,9 +24397,20 @@ namespace {
          *
          * @return false|string
          */
-        public function get_parsed_list_of_files($value, $form_id, $input_name)
+        public function get_parsed_list_of_files($value, $form_id = 0, $input_name = '')
         {
         }
+        /**
+         * Gets the value to be saved for the single file input.
+         *
+         * @since 1.9
+         * @since 2.9.18 Updated to use $this->get_submission_files(), $this->filter_submission_files_pre_save(), & GFFormsModel::get_tmp_upload_location().
+         *
+         * @param int    $form_id    ID of the form.
+         * @param string $input_name Name of the input (e.g. input_1).
+         *
+         * @return string
+         */
         public function get_single_file_value($form_id, $input_name)
         {
         }
@@ -22921,6 +24420,19 @@ namespace {
         public function get_value_entry_list($value, $entry, $field_id, $columns, $form)
         {
         }
+        /**
+         * Format the entry value for display on the entry detail page and for the {all_fields} merge tag.
+         *
+         * @since 2.9.18 Updated to use $this->get_file_name_from_url().
+         *
+         * @param string|array $value    The field value.
+         * @param string       $currency The entry currency code.
+         * @param bool|false   $use_text When processing choice based fields should the choice text be returned instead of the value.
+         * @param string       $format   The format requested for the location the merge is being used. Possible values: html, text, or url.
+         * @param string       $media    The location where the value will be displayed. Possible values: screen or email.
+         *
+         * @return string|false
+         */
         public function get_value_entry_detail($value, $currency = '', $use_text = \false, $format = 'html', $media = 'screen')
         {
         }
@@ -22998,6 +24510,189 @@ namespace {
          * @return string
          */
         public static function get_file_upload_path_meta_key_hash($file_url)
+        {
+        }
+        /**
+         * Returns an array of files found in the submission for the current field.
+         *
+         * @since 2.9.18
+         *
+         * @return array[] {
+         *      @type array[] $new {
+         *          File details from $_FILES.
+         *
+         *          @type string $name      The original name of the file on the client machine.
+         *          @type string $type      The MIME type of the file provided by the browser.
+         *          @type int    $size      The size of the file in bytes.
+         *          @type string $tmp_name  The temporary filename of the file in which the uploaded file was stored on the server.
+         *          @type int    $error     The PHP error code for the file upload. See https://www.php.net/manual/en/filesystem.constants.php#constant.upload-err-cant-write
+         *          @type string $full_path The full path as submitted by the browser. Only populated with PHP 8.1+.
+         *      }
+         *      @type array[] $existing {
+         *          File details from GFFormsModel::$uploaded_files.
+         *
+         *          @type string      $uploaded_filename The name of the uploaded file, an existing file, or the name parsed from the populated URL.
+         *          @type string|null $temp_filename     The temporary name of the file. Only present if the file has been saved to the form tmp folder.
+         *          @type string|null $url               The file URL. Only present if the file has been dynamically populated on initial form display.
+         *      }
+         * }
+         */
+        public function get_submission_files()
+        {
+        }
+        /**
+         * Caches the submission files in a context property and the existing files in GFFormsModel::$uploaded_files.
+         *
+         * @since 2.9.18
+         *
+         * @param null|array[] $files Null to flush the submission_files property or the array to be cached. See get_submission_files() for format.
+         *
+         * @return void
+         * @phpstan-return void
+         */
+        public function set_submission_files($files)
+        {
+        }
+        /**
+         * Determines if the submission files array is empty.
+         *
+         * @since 2.9.18
+         *
+         * @param null|array[] $files See get_submission_files().
+         *
+         * @return bool
+         */
+        public function is_submission_files_empty($files = \null)
+        {
+        }
+        /**
+         * Normalizes the submission files array, including the uploaded_filename for new files, so it can be used to generate the preview markup.
+         *
+         * @since 2.9.18
+         *
+         * @return array[]
+         */
+        public function get_submission_files_for_preview()
+        {
+        }
+        /**
+         * Returns the file details from the existing submission files.
+         *
+         * @since 2.9.18
+         *
+         * @param string $name The original file name.
+         *
+         * @return array
+         */
+        public function get_tmp_file_details_from_submission_files($name)
+        {
+        }
+        /**
+         * Returns the file parsed from $_FILES by $this->get_submission_files() that matches the given name.
+         *
+         * @since 2.9.18
+         *
+         * @param string $name The original file name.
+         *
+         * @return array
+         */
+        public function get_new_file_from_submission_files($name)
+        {
+        }
+        /**
+         * Returns the temporary file details.
+         *
+         * @since 2.9.18
+         *
+         * @param array|string $file_or_name A file from $this->get_submission_files() or $_FILES, or a filename.
+         *
+         * @return array {
+         *      @type string $uploaded_filename Sanitized version of the original file name.
+         *      @type string $temp_filename     The unique name to be used when the file is stored in the form tmp folder.
+         *      @type string $id                The UUID to be used with the ID attributes of the file preview and error markup.
+         * }
+         */
+        public function get_tmp_file_details($file_or_name)
+        {
+        }
+        /**
+         * Returns an array of temporary files uploaded to the form tmp folder for the current submission.
+         *
+         * @since 2.9.18
+         *
+         * @return array[]
+         */
+        public function upload_submission_tmp_files()
+        {
+        }
+        /**
+         * Moves the file from the PHP tmp folder to the form tmp folder.
+         *
+         * @since 2.9.18
+         *
+         * @param array $file The file details parsed by $this->get_submission_files() from $_FILES.
+         *
+         * @return array The temporary file details.
+         */
+        public function upload_tmp_file($file)
+        {
+        }
+        /**
+         * Supports using the dynamic population feature to populate the field on initial form display with file URLs.
+         *
+         * @since 2.9.18
+         *
+         * @param string $standard_name            The input name used when accessing the $_POST.
+         * @param string $custom_name              The dynamic population parameter name.
+         * @param array  $field_values             The dynamic population parameter names with their corresponding values to be populated.
+         * @param bool   $get_from_post_global_var Whether to get the value from the $_POST array as opposed to $field_values.
+         *
+         * @return array|string|null
+         */
+        public function get_input_value_submission($standard_name, $custom_name = '', $field_values = array(), $get_from_post_global_var = \true)
+        {
+        }
+        /**
+         * Triggers population of GFFormsModel::$uploaded_files with any file URLs found in the given value.
+         *
+         * @since 2.9.18
+         *
+         * @param string|array $value A single file URL, a comma-seperated list of file URLs, a JSON encoded array of file URLs, or an array of file URLs.
+         *
+         * @return void
+         * @phpstan-return void
+         */
+        public function populate_file_urls_from_value($value)
+        {
+        }
+        /**
+         * Populates the submission_files context property & GFFormsModel::$uploaded_files with the details array for the given file URL.
+         *
+         * @since 2.9.18
+         *
+         * @param string $url The file URL.
+         *
+         * @return false|array {
+         *      @type string $uploaded_filename Sanitized version of the file/basename parsed from the URL.
+         *      @type string $url               Sanitized version of the file URL.
+         * }
+         */
+        public function populate_file_url($url)
+        {
+        }
+        /**
+         * Parses the file name/basename from the given URL.
+         *
+         * @since 2.9.18
+         *
+         * @param string $url The file URL.
+         *
+         * @return false|array {
+         *      @type string $original  The original file name.
+         *      @type string $sanitized The sanitized file name.
+         * }
+         */
+        public function get_file_name_from_url($url)
         {
         }
     }
@@ -23095,6 +24790,46 @@ namespace {
         {
         }
         public function sanitize_settings()
+        {
+        }
+    }
+    /**
+     * The honeypot field used to capture spam.
+     *
+     * @since 2.9.16
+     */
+    class GF_Field_Honeypot extends \GF_Field
+    {
+        /**
+         * The field type.
+         *
+         * @since 2.9.16
+         *
+         * @var string
+         */
+        public $type = 'honeypot';
+        /**
+         * Prevent the field type button appearing in the form editor.
+         *
+         * @since 2.9.16
+         *
+         * @return array
+         */
+        public function get_form_editor_button()
+        {
+        }
+        /**
+         * Returns the field inner markup.
+         *
+         * @since 2.9.16
+         *
+         * @param array      $form  The form the field is to be output for.
+         * @param string     $value The field value.
+         * @param null|array $entry Null or the current entry.
+         *
+         * @return string
+         */
+        public function get_field_input($form, $value = '', $entry = \null)
         {
         }
     }
@@ -23260,6 +24995,7 @@ namespace {
          * @since 2.9.3
          *
          * @param array $forms The forms being imported.
+         * @phpstan-return void
          */
         public static function resize_images_after_import($forms)
         {
@@ -25675,6 +27411,7 @@ namespace {
          *
          * @param string|array $items The field values from get_value_submission().
          * @param array        $form  The Form Object currently being processed.
+         * @phpstan-return void
          */
         public function validate($items, $form)
         {
@@ -25854,6 +27591,18 @@ namespace {
          * @return mixed
          */
         public function get_sub_field_input($field, $form, $field_value, $entry, $index)
+        {
+        }
+        /**
+         * Validates the sub field.
+         *
+         * @since 2.9.10
+         *
+         * @param GF_Field $field
+         * @param string   $field_value
+         * @param array    $form
+         */
+        public function validate_subfield($field, $field_value, $form)
         {
         }
         /**
@@ -26136,12 +27885,26 @@ namespace {
         /**
          * Strips all tags from the input value.
          *
+         * @since 1.9
+         * @since 2.9.18 Added check for state validation.
+         *
          * @param string $value The field value to be processed.
          * @param int $form_id The ID of the form currently being processed.
          *
          * @return string
          */
         public function sanitize_entry_value($value, $form_id)
+        {
+        }
+        /**
+         * Forces settings into expected values while saving the form object.
+         *
+         * @since 2.9.16
+         * @access public
+         *
+         * @return void
+         */
+        public function sanitize_settings()
         {
         }
         // # FIELD FILTER UI HELPERS ---------------------------------------------------------------------------------------
@@ -26326,6 +28089,7 @@ namespace {
          * The submit button editor field title is declared in gf_vars['button'] instead of here.
          *
          * @since 2.6
+         * @phpstan-return void
          */
         public function get_form_editor_field_title()
         {
@@ -26336,6 +28100,7 @@ namespace {
          * The submit button editor field description is declared in gf_vars['buttonDescription'] instead of here.
          *
          * @since 2.6
+         * @phpstan-return void
          */
         public function get_form_editor_field_description()
         {
@@ -26368,6 +28133,7 @@ namespace {
          * This field is automatically added to the form, so it doesn't have a button.
          *
          * @since 2.6
+         * @phpstan-return void
          */
         public function get_form_editor_button()
         {
@@ -26512,6 +28278,7 @@ namespace {
          *
          * @param string|array $value The field value from get_value_submission().
          * @param array        $form  The Form Object currently being processed.
+         * @phpstan-return void
          */
         public function validate($value, $form)
         {
@@ -26713,6 +28480,7 @@ namespace {
          * @param array        $form  The Form Object.
          *
          * @return void
+         * @phpstan-return void
          */
         public function validate($value, $form)
         {
@@ -26964,6 +28732,7 @@ namespace {
          * @param array  $form  The form currently being validated.
          *
          * @return void
+         * @phpstan-return void
          */
         public function validate($value, $form)
         {
@@ -27034,6 +28803,17 @@ namespace {
          * @return array
          */
         public function get_filter_operators()
+        {
+        }
+        /**
+         * Performs actions after the field has been converted to an object.
+         *
+         * Ensures the `autocompleteAttribute` property is set to 'url' if it is not already defined.
+         *
+         * @since 2.9.8
+         *
+         */
+        public function post_convert_field()
         {
         }
     }
@@ -27200,7 +28980,7 @@ namespace Gravity_Forms\Gravity_Forms\Theme_Layers\API {
          *
          * @return string
          */
-        public abstract function get_markup($content, $object, $value, $lead_id, $form_id);
+        abstract public function get_markup($content, $object, $value, $lead_id, $form_id);
         /**
          * Whether this markup override should be in effect.
          *
@@ -27507,6 +29287,7 @@ namespace Gravity_Forms\Gravity_Forms\Form_Editor {
         // Endpoint names, used as keys for the endpoint classes in the service container.
         // keys are the same names for the ajax actions.
         const ENDPOINT_FORM_EDITOR_SAVE = 'form_editor_save_form';
+        const ENDPOINT_SUBMITTED_FIELDS = 'gf_get_submitted_fields';
         /**
          * The endpoint class names and their corresponding string keys in the service container.
          *
@@ -27514,7 +29295,7 @@ namespace Gravity_Forms\Gravity_Forms\Form_Editor {
          *
          * @var string[]
          */
-        protected $endpoints = array(self::ENDPOINT_FORM_EDITOR_SAVE => \Gravity_Forms\Gravity_Forms\Form_Editor\Save_Form\Endpoints\GF_Save_Form_Endpoint_Form_Editor::class);
+        protected $endpoints = array(self::ENDPOINT_FORM_EDITOR_SAVE => \Gravity_Forms\Gravity_Forms\Form_Editor\Save_Form\Endpoints\GF_Save_Form_Endpoint_Form_Editor::class, self::ENDPOINT_SUBMITTED_FIELDS => \Gravity_Forms\Gravity_Forms\Form_Editor\Submitted_Fields\Endpoints\GF_Submitted_Fields_Endpoint::class);
         public function register(\Gravity_Forms\Gravity_Forms\GF_Service_Container $container)
         {
         }
@@ -27813,6 +29594,171 @@ namespace Gravity_Forms\Gravity_Forms\Form_Editor\Save_Form\Endpoints {
         }
     }
 }
+namespace Gravity_Forms\Gravity_Forms\Form_Editor\Submitted_Fields\Endpoints {
+    /**
+     * Class GF_Submitted_Fields_Endpoint
+     *
+     * Endpoint for retrieving submitted fields data for the form editor.
+     *
+     * @since 2.9.20
+     *
+     * @package Gravity_Forms\Gravity_Forms\Form_Editor\Submitted_Fields\Endpoints
+     */
+    class GF_Submitted_Fields_Endpoint
+    {
+        /**
+         * The action name for this endpoint.
+         *
+         * @since 2.9.20
+         *
+         * @var string
+         */
+        const ACTION_NAME = 'gf_get_submitted_fields';
+        /**
+         * The nonce action for this endpoint.
+         *
+         * @since 2.9.20
+         *
+         * @var string
+         */
+        const NONCE_ACTION = 'gf_get_submitted_fields';
+        /**
+         * @since 2.9.20
+         *
+         * @param array $dependencies
+         */
+        public function __construct($dependencies)
+        {
+        }
+        /**
+         * Handle the endpoint request.
+         *
+         * @since 2.9.20
+         *
+         * @return void
+         * @phpstan-return never
+         */
+        public function handle()
+        {
+        }
+    }
+}
+namespace Gravity_Forms\Gravity_Forms\Form_Switcher {
+    /**
+     * Class GF_Form_Switcher_Service_Provider
+     *
+     * Service provider for the Form_Switcher Service.
+     *
+     * @package Gravity_Forms\Gravity_Forms\Form_Switcher;
+     */
+    class GF_Form_Switcher_Service_Provider extends \Gravity_Forms\Gravity_Forms\GF_Service_Provider
+    {
+        // Configs
+        const FORM_SWITCHER_CONFIG = 'form_switcher_config';
+        const ENDPOINT_GET_FORMS = 'endpoint_get_forms';
+        /**
+         * Array mapping config class names to their container ID.
+         *
+         * @since 2.9.6
+         *
+         * @var string[]
+         */
+        protected $configs = array(self::FORM_SWITCHER_CONFIG => \Gravity_Forms\Gravity_Forms\Form_Switcher\Config\GF_Form_Switcher_Config::class);
+        /**
+         * Register services to the container.
+         *
+         * @since 2.9.6
+         *
+         * @param GF_Service_Container $container
+         */
+        public function register(\Gravity_Forms\Gravity_Forms\GF_Service_Container $container)
+        {
+        }
+        /**
+         * Initialize any actions or hooks.
+         *
+         * @since 2.9.6
+         *
+         * @param GF_Service_Container $container
+         *
+         * @return void
+         */
+        public function init(\Gravity_Forms\Gravity_Forms\GF_Service_Container $container)
+        {
+        }
+    }
+}
+namespace Gravity_Forms\Gravity_Forms\Form_Switcher\Config {
+    /**
+     * Config items for Form_Switcher.
+     *
+     * @since 2.9.6
+     */
+    class GF_Form_Switcher_Config extends \Gravity_Forms\Gravity_Forms\Config\GF_Config
+    {
+        protected $name = 'gform_admin_config';
+        protected $script_to_localize = 'gform_gravityforms_admin_vendors';
+        /**
+         * Only enqueue in the admin.
+         *
+         * @since 2.9.6
+         *
+         * @return bool
+         */
+        public function should_enqueue()
+        {
+        }
+        /**
+         * Config data.
+         *
+         * @since 2.9.6
+         *
+         * @return array[]
+         */
+        public function data()
+        {
+        }
+        /**
+         * Get the endpoints for the Form Switcher.
+         *
+         * @since 2.9.6
+         *
+         * @return array
+         */
+        public function get_endpoints()
+        {
+        }
+    }
+}
+namespace Gravity_Forms\Gravity_Forms\Form_Switcher\Endpoints {
+    /**
+     * AJAX Endpoint for getting a form based on a search query.
+     *
+     * @since   2.9.6
+     *
+     * @package Gravity_Forms\Gravity_Forms\Form_Switcher\Endpoints
+     */
+    class GF_Form_Switcher_Endpoint_Get_Forms
+    {
+        // Strings
+        const ACTION_NAME = 'gf_form_switcher_get_forms';
+        // Parameters
+        const PARAM_SEARCH = 'search';
+        // Defaults
+        const DEFAULT_SEARCH = '';
+        /**
+         * Handle the AJAX request.
+         *
+         * @since 2.9.6
+         *
+         * @return void
+         * @phpstan-return never
+         */
+        public function handle()
+        {
+        }
+    }
+}
 namespace Gravity_Forms\Gravity_Forms\Honeypot {
     /**
      * Class GF_Honeypot_Handler
@@ -27827,9 +29773,10 @@ namespace Gravity_Forms\Gravity_Forms\Honeypot {
          * Target of the gform_entry_is_spam filter. Checks entry for honeypot validation and returns true or false depending on the result.
          *
          * @since 2.7
+         * @since 2.9.21 Updated to get the entry note message from `get_cached_result()`.
          *
          * @param bool  $is_spam Variable being filtered. True for spam, false for non-spam.
-         * @param array $form Current form object.
+         * @param array $form    Current form object.
          *
          * @return bool Returns true if honeypot validation fails. False otherwise.
          */
@@ -27840,9 +29787,10 @@ namespace Gravity_Forms\Gravity_Forms\Honeypot {
          * Target of the gform_abort_submission_with_confirmation filter. Aborts form submission early with a confirmation when honeypot fails and it is configured not to create an entry.
          *
          * @since 2.7
+         * @since 2.9.8 Updated honeypotAction default to spam.
          *
          * @param bool  $do_abort Variable being filtered. True to abort submission, false to continue.
-         * @param array $form Current form object.
+         * @param array $form     Current form object.
          *
          * @return bool Returns true to abort form submission early and display confirmation. Returns false to let submission continue.
          */
@@ -27873,9 +29821,36 @@ namespace Gravity_Forms\Gravity_Forms\Honeypot {
         {
         }
         /**
+         * Returns the cached result for the given form ID.
+         *
+         * @since 2.9.21
+         *
+         * @param int $form_id The current form ID.
+         *
+         * @return false|array
+         */
+        public function get_cached_result($form_id)
+        {
+        }
+        /**
+         * Caches the result for the given form ID.
+         *
+         * @since 2.9.21
+         *
+         * @param int   $form_id The current form ID.
+         * @param array $result  The result to be cached.
+         *
+         * @return void
+         */
+        public function cache_result($form_id, $result)
+        {
+        }
+        /**
          * Validates the submission against the honeypot field.
          *
          * @since 2.7
+         * @since 2.9.16 Updated to use `get_input_name()`.
+         * @since 2.9.21 Updated to perform a submission speed check, return early on invalid checks, and to use `get_cached_result()` and `cache_result()`.
          *
          * @param array $form The current form object.
          *
@@ -27894,6 +29869,31 @@ namespace Gravity_Forms\Gravity_Forms\Honeypot {
          * @return int Returns the id of the honeypot field.
          */
         public function get_honeypot_field_id($form)
+        {
+        }
+        /**
+         * Returns the value used in the name attribute of the honeypot input.
+         *
+         * @since 2.9.16
+         *
+         * @param array    $form The form being rendered or validated.
+         * @param null|int $id   The ID of the honeypot field, or null to use GF_Honeypot_Handler::get_honeypot_field_id().
+         *
+         * @return string
+         */
+        public function get_input_name($form, $id = null)
+        {
+        }
+        /**
+         * Creates the honeypot field object for the given form.
+         *
+         * @since 2.7
+         *
+         * @param array $form The form the honeypot field is to be created for.
+         *
+         * @return bool|\GF_Field Returns the honeypot field.
+         */
+        public function get_honeypot_field($form)
         {
         }
         /**
@@ -27928,6 +29928,149 @@ namespace Gravity_Forms\Gravity_Forms\Honeypot {
          * @return bool True if the current form submission was initiated via GFAPI. False otherwise.
          */
         public function is_api_submission()
+        {
+        }
+        /**
+         * Determines if the submission speed check is enabled.
+         *
+         * @since 2.9.21
+         *
+         * @param array $form The form being processed.
+         *
+         * @return bool
+         */
+        public function is_speed_check_enabled($form)
+        {
+        }
+        /**
+         * Returns the submission speed threshold.
+         *
+         * @since 2.9.21
+         *
+         * @param array $form The form being processed.
+         *
+         * @return int
+         */
+        public function get_submission_speed_threshold($form)
+        {
+        }
+        /**
+         * Determines if strict mode is enabled for the submission speed check.
+         *
+         * @since 2.9.21
+         *
+         * @param array $form The form being processed.
+         *
+         * @return bool
+         */
+        public function is_strict_submission_speed_mode_enabled($form)
+        {
+        }
+        /**
+         * Determines if the submission speed check is valid.
+         *
+         * @since 2.9.21
+         *
+         * @param array $form The current form object.
+         *
+         * @return array
+         */
+        public function is_valid_submission_speed($form)
+        {
+        }
+        /**
+         * Formats the submission speeds for the entry note.
+         *
+         * @since 2.9.21
+         *
+         * @param array $speeds The recorded speeds.
+         *
+         * @return string
+         */
+        public function format_submission_speeds_for_note($speeds)
+        {
+        }
+        /**
+         * Checks the submission speeds against the threshold.
+         *
+         * @since 2.9.21
+         *
+         * @param array $speeds    The recorded speeds.
+         * @param int   $threshold The submission speed threshold.
+         *
+         * @return array
+         */
+        public function check_submission_speeds($speeds, $threshold)
+        {
+        }
+        /**
+         * Parses and sanitizes the submission speeds from the gform_submit_speeds input for the current form.
+         *
+         * @since 2.9.21
+         *
+         * @param int $form_id The current form ID.
+         *
+         * @return array
+         */
+        public function get_submission_speeds_array($form_id)
+        {
+        }
+        /**
+         * JSON encodes the submission speeds for the current form markup.
+         *
+         * @since 2.9.21
+         *
+         * @param int $form_id The current form ID.
+         *
+         * @return false|string
+         */
+        public function get_submission_speeds_json($form_id)
+        {
+        }
+        /**
+         * Registers and saves the submission speeds to the entry meta, so the user can display it as an entries list column.
+         *
+         * Callback for the gform_entry_meta filter added via GF_Honeypot_Service_Provider::init().
+         *
+         * @since 2.9.21
+         *
+         * @param array $entry_meta The registered entry meta.
+         *
+         * @return array
+         */
+        public function submission_speeds_entry_meta($entry_meta)
+        {
+        }
+        /**
+         * Formats the value for display in an entries list column.
+         *
+         * Callback for the gform_entries_field_value filter added via GF_Honeypot_Service_Provider::init().
+         *
+         * @since 2.9.21
+         *
+         * @param mixed|string $value    The escaped value of the field, entry property, or meta-key.
+         * @param int          $form_id  The ID of the current form.
+         * @param int|string   $field_id The field ID entry property, or meta-key.
+         * @param array        $entry    The current entry.
+         *
+         * @return mixed|string
+         */
+        public function submission_speeds_entries_field_value($value, $form_id, $field_id, $entry)
+        {
+        }
+        /**
+         * Displays the submission speeds on the entry detail page.
+         *
+         * Callback for the gform_entry_detail_meta_boxes filter added via GF_Honeypot_Service_Provider::init().
+         *
+         * @since 2.9.21
+         *
+         * @param array $meta_boxes The registered meta boxes.
+         * @param array $entry      The current entry.
+         *
+         * @return array
+         */
+        public function submission_speeds_entry_detail_meta_box($meta_boxes, $entry)
         {
         }
     }
@@ -28261,6 +30404,7 @@ namespace {
          * @param string $meta_key The key for the meta data to be stored
          * @param mixed $meta_value The data to be stored for the entry
          * @param int|null $form_id The form ID of the entry (optional, saves extra query if passed when creating the metadata)
+         * @phpstan-return void
          */
         public static function gform_update_meta($entry_id, $meta_key, $meta_value, $form_id = \null)
         {
@@ -28423,7 +30567,7 @@ namespace Gravity_Forms\Gravity_Forms\Libraries {
          *
          * @since 2.5.6
          *
-         * @var DOMDocument $dom_xml
+         * @var \DOMDocument $dom_xml
          */
         public $dom_xml;
         /**
@@ -28431,7 +30575,7 @@ namespace Gravity_Forms\Gravity_Forms\Libraries {
          *
          * @since 2.5.6
          *
-         * @var DOMDocument $dom_html
+         * @var \DOMDocument $dom_html
          */
         public $dom_html;
         /**
@@ -28454,6 +30598,7 @@ namespace Gravity_Forms\Gravity_Forms\Libraries {
          * GF_Dom_Parser constructor.
          *
          * @param string $content
+         * @phpstan-return void
          */
         public function __construct($content)
         {
@@ -28695,6 +30840,7 @@ namespace Gravity_Forms\Gravity_Forms\License {
          * @param mixed $data The data from the API connector.
          * @param bool $validate Whether to validate the data passed.
          * @param GF_Transient_Strategy $transient_strategy The Transient Strategy used to store things in transients.
+         * @phpstan-return void
          */
         public function __construct($data, $validate, \Gravity_Forms\Gravity_Forms\Transients\GF_Transient_Strategy $transient_strategy)
         {
@@ -29267,6 +31413,7 @@ namespace {
          * @param int    $message_type (default: KLogger::DEBUG) Message type.
          *
          * NOTE: This function is static for backwards compatibility reasons. Some legacy add-ons still reference this function statically
+         * @phpstan-return void
          */
         public static function log_message($plugin, $message = \null, $message_type = \KLogger::DEBUG)
         {
@@ -29419,6 +31566,7 @@ namespace {
          *
          * @since  1.3
          * @access public
+         * @phpstan-return void
          */
         public function upgrade_from_pre_ui_update()
         {
@@ -29428,6 +31576,7 @@ namespace {
          *
          * @since  2.1.1.2
          * @access public
+         * @phpstan-return void
          */
         public function upgrade_from_pre_addon_framework()
         {
@@ -29533,6 +31682,7 @@ namespace Gravity_Forms\Gravity_Forms\Messages {
          * @param string|null $page The page on which to display the sticky message. NULL will display on all pages available.
          *
          * @since 2.5.7
+         * @phpstan-return void
          */
         public function add_internal($key, $type = 'warning', $capabilities = false, $sticky = false, $page = null)
         {
@@ -29558,6 +31708,7 @@ namespace Gravity_Forms\Gravity_Forms\Messages {
          * @param string $key
          *
          * @since 2.5.7
+         * @phpstan-return void
          */
         public function remove($key)
         {
@@ -29962,7 +32113,7 @@ namespace Gravity_Forms\Gravity_Forms\Orders\Items {
          *
          * @return array
          */
-        protected final function get_default_properties()
+        final protected function get_default_properties()
         {
         }
         /**
@@ -30014,7 +32165,7 @@ namespace Gravity_Forms\Gravity_Forms\Orders\Items {
          * @param array $data   The new data.
          * @param array $except A group of keys to be skipped while overriding.
          */
-        public final function override_properties($data, $except = array())
+        final public function override_properties($data, $except = array())
         {
         }
         /**
@@ -30024,7 +32175,7 @@ namespace Gravity_Forms\Gravity_Forms\Orders\Items {
          *
          * @return array The item properties
          */
-        public final function to_array()
+        final public function to_array()
         {
         }
         /**
@@ -30036,7 +32187,7 @@ namespace Gravity_Forms\Gravity_Forms\Orders\Items {
          *
          * @return mixed|null The property value or null if nothing found.
          */
-        public final function __get($key)
+        final public function __get($key)
         {
         }
         /**
@@ -30047,7 +32198,7 @@ namespace Gravity_Forms\Gravity_Forms\Orders\Items {
          * @param string $key   The property name to look for.
          * @param mixed  $value The property value.
          */
-        public final function __set($key, $value)
+        final public function __set($key, $value)
         {
         }
     }
@@ -31074,6 +33225,107 @@ namespace {
         }
     }
 }
+namespace Gravity_Forms\Gravity_Forms\Post_Custom_Field_Select {
+    /**
+     * Config items for the Post Custom Field Select dropdown
+     *
+     * @since 2.9.20
+     */
+    class GF_Post_Custom_Field_Select_Config extends \Gravity_Forms\Gravity_Forms\Config\GF_Config
+    {
+        protected $name = 'gform_admin_config';
+        protected $script_to_localize = 'gform_gravityforms_admin_vendors';
+        /**
+         * Constructor
+         *
+         * @since 2.9.20
+         *
+         * @param GF_Config_Data_Parser $data_parser
+         */
+        public function __construct(\Gravity_Forms\Gravity_Forms\Config\GF_Config_Data_Parser $data_parser)
+        {
+        }
+        /**
+         * Only enqueue in the form editor
+         *
+         * @since 2.9.20
+         *
+         * @return bool
+         */
+        public function should_enqueue()
+        {
+        }
+        /**
+         * Config data for the post custom field select dropdown
+         *
+         * @since 2.9.20
+         *
+         * @return array
+         */
+        public function data()
+        {
+        }
+    }
+    /**
+     * Class GF_Post_Custom_Field_Select_Service_Provider
+     *
+     * Service provider for the Post Custom Field Select functionality
+     *
+     * @since 2.9.20
+     */
+    class GF_Post_Custom_Field_Select_Service_Provider extends \Gravity_Forms\Gravity_Forms\GF_Service_Provider
+    {
+        const POST_CUSTOM_SELECT = 'post_custom_select';
+        const POST_CUSTOM_SELECT_CONFIG = 'post_custom_select_config';
+        /**
+         * Register services to the container
+         *
+         * @since 2.9.20
+         *
+         * @param GF_Service_Container $container
+         */
+        public function register(\Gravity_Forms\Gravity_Forms\GF_Service_Container $container)
+        {
+        }
+        /**
+         * Initialize any actions or hooks
+         *
+         * @since 2.9.20
+         *
+         * @param GF_Service_Container $container
+         */
+        public function init(\Gravity_Forms\Gravity_Forms\GF_Service_Container $container)
+        {
+        }
+    }
+    /**
+     * Class GF_Post_Custom_Field_Select
+     *
+     * Handles AJAX requests for the post custom field name select dropdown in the form editor
+     *
+     * @since 2.9.20
+     */
+    class GF_Post_Custom_Field_Select
+    {
+        /**
+         * Initialize the post custom field select functionality
+         *
+         * @since 2.9.20
+         */
+        public function init()
+        {
+        }
+        /**
+         * Handle AJAX request to get custom field names
+         *
+         * @since 2.9.20
+         * @phpstan-return never
+         */
+        public function ajax_custom_fields()
+        {
+        }
+    }
+}
 namespace Gravity_Forms\Gravity_Forms\Query\Batch_Processing {
     class GF_Batch_Operations_Service_Provider extends \Gravity_Forms\Gravity_Forms\GF_Service_Provider
     {
@@ -31215,6 +33467,7 @@ namespace {
          * @param string $field_id The field ID (meta key or column name).
          * @param int|array $source The source this field is referencing.
          * @param string|bool $alias An alias override. Default: false.
+         * @phpstan-return void
          */
         public function __construct($field_id, $source = 0, $alias = \false)
         {
@@ -31888,7 +34141,7 @@ namespace Gravity_Forms\Gravity_Forms\Query\JSON_Handlers {
          *
          * @return string
          */
-        public abstract function query($slug);
+        abstract public function query($slug);
     }
     /**
      * GF_JSON_Handler implementation which uses a MySQL JSON query to gather data. More performant that string-based
@@ -32237,6 +34490,7 @@ namespace Gravity_Forms\Gravity_Forms\Settings {
      */
     class GF_Settings_Service_Provider extends \Gravity_Forms\Gravity_Forms\GF_Service_Provider
     {
+        const SETTINGS = 'settings';
         // Configs
         const SETTINGS_CONFIG_I18N = 'settings_config_i18n';
         const SETTINGS_CONFIG_ADMIN = 'settings_config_admin';
@@ -32258,6 +34512,18 @@ namespace Gravity_Forms\Gravity_Forms\Settings {
          * @param GF_Service_Container $container
          */
         public function register(\Gravity_Forms\Gravity_Forms\GF_Service_Container $container)
+        {
+        }
+        /**
+         * Initialize any actions or hooks.
+         *
+         * @since 2.9.5
+         *
+         * @param GF_Service_Container $container
+         *
+         * @return void
+         */
+        public function init(\Gravity_Forms\Gravity_Forms\GF_Service_Container $container)
         {
         }
     }
@@ -32414,6 +34680,7 @@ namespace Gravity_Forms\Gravity_Forms\Settings {
          * Render tab navigation above settings sections.
          *
          * @since 2.5
+         * @phpstan-return void
          */
         public function render_tab_navigation()
         {
@@ -32434,6 +34701,7 @@ namespace Gravity_Forms\Gravity_Forms\Settings {
          * @since 2.5
          *
          * @param array $section Section properties.
+         * @phpstan-return void
          */
         public function render_section($section)
         {
@@ -32444,6 +34712,7 @@ namespace Gravity_Forms\Gravity_Forms\Settings {
          * @since 2.5
          *
          * @param Fields\Base $field
+         * @phpstan-return void
          */
         public function render_field($field)
         {
@@ -32539,6 +34808,7 @@ namespace Gravity_Forms\Gravity_Forms\Settings {
          *    If invalid, displays error message.
          *
          * @since 2.5
+         * @phpstan-return void
          */
         public function process_postback()
         {
@@ -32883,11 +35153,26 @@ namespace Gravity_Forms\Gravity_Forms\Settings {
         public static function is_save_postback()
         {
         }
+        /**
+         * Remove the "has published posts" query from the REST user query.
+         *
+         * This will make sure that the User Select field can find all users, not just users with published posts.
+         *
+         * @since 2.9.5
+         *
+         * @param $prepared_args
+         * @param $request
+         *
+         * @return mixed
+         */
+        public function remove_has_published_posts_from_api_user_query($prepared_args, $request)
+        {
+        }
     }
 }
 namespace Gravity_Forms\Gravity_Forms\Settings\Config {
     /**
-     * Config items for the Settings I18N
+     * Config items for the Settings Fields
      *
      * @since 2.6.2
      */
@@ -32926,6 +35211,16 @@ namespace Gravity_Forms\Gravity_Forms\Settings\Config {
          * @return array|false
          */
         public function get_first_posts_for_type($post_type, $count)
+        {
+        }
+        /**
+         * Get the first users to populate the dropdown.
+         *
+         * @since 2.9.5
+         *
+         * @return array|false
+         */
+        public function get_first_users()
         {
         }
     }
@@ -33155,7 +35450,7 @@ namespace Gravity_Forms\Gravity_Forms\Settings\Fields {
          *
          * @var string
          */
-        protected $placeholder;
+        public $placeholder;
         /**
          * Checkbox input attributes
          *
@@ -33357,6 +35652,7 @@ namespace Gravity_Forms\Gravity_Forms\Settings\Fields {
          * @since 2.5-beta-3
          *
          * @param array|bool|string $value Posted field value.
+         * @phpstan-return void
          */
         public function handle_validation($value)
         {
@@ -33647,6 +35943,7 @@ namespace Gravity_Forms\Gravity_Forms\Settings\Fields {
          * @since 2.5
          *
          * @param string $value Posted field value.
+         * @phpstan-return void
          */
         public function do_validation($value)
         {
@@ -33765,6 +36062,7 @@ namespace Gravity_Forms\Gravity_Forms\Settings\Fields {
          * @since 2.5-beta-3
          *
          * @param array $values Posted field values.
+         * @phpstan-return void
          */
         public function do_validation($values)
         {
@@ -33858,6 +36156,7 @@ namespace Gravity_Forms\Gravity_Forms\Settings\Fields {
          * @since 2.6
          *
          * @param array $value Posted field value.
+         * @phpstan-return void
          */
         public function do_array_validation($value)
         {
@@ -33947,6 +36246,7 @@ namespace Gravity_Forms\Gravity_Forms\Settings\Fields {
          * @since 2.5
          *
          * @param array $value Posted field value.
+         * @phpstan-return void
          */
         public function do_validation($value)
         {
@@ -34003,20 +36303,10 @@ namespace Gravity_Forms\Gravity_Forms\Settings\Fields {
          *
          * @since 2.5
          *
-         * @param array                                $props    Field properties.
-         * @param \Gravity_Forms\Gravity_Forms\Settings\Settings $settings Settings instance.
+         * @param array                                          $props    Field properties.
+         * @param \Gravity_Forms\Gravity_Forms\Settings\Settings $settings Settings framework instance.
          */
         public function __construct($props, $settings)
-        {
-        }
-        /**
-         * Register scripts to enqueue when displaying field.
-         *
-         * @since 2.5
-         *
-         * @return array
-         */
-        public function scripts()
         {
         }
         // # RENDER METHODS ------------------------------------------------------------------------------------------------
@@ -34076,6 +36366,7 @@ namespace Gravity_Forms\Gravity_Forms\Settings\Fields {
          * @since 2.5
          *
          * @param array|bool|string $value Posted field value.
+         * @phpstan-return void
          */
         public function do_validation($value)
         {
@@ -34256,6 +36547,7 @@ namespace Gravity_Forms\Gravity_Forms\Settings\Fields {
          * @since 2.5
          *
          * @param string|array $value Posted field value.
+         * @phpstan-return void
          */
         public function do_validation($value)
         {
@@ -34503,6 +36795,7 @@ namespace Gravity_Forms\Gravity_Forms\Settings\Fields {
          * @since 2.5
          *
          * @param array $value Posted field values.
+         * @phpstan-return void
          */
         public function do_validation($value)
         {
@@ -34567,7 +36860,14 @@ namespace Gravity_Forms\Gravity_Forms\Settings\Fields {
          * @var string
          */
         public $input_type = 'text';
-        protected $step;
+        /**
+         * Step attribute for number inputs. Originally set to protected as a dynamic property.
+         *
+         * @since 2.8.1
+         *
+         * @var string
+         */
+        public $step;
         protected $append;
         // # RENDER METHODS ------------------------------------------------------------------------------------------------
         /**
@@ -34673,6 +36973,7 @@ namespace Gravity_Forms\Gravity_Forms\Settings\Fields {
          * @since 2.5
          *
          * @param string $value Posted field value.
+         * @phpstan-return void
          */
         public function do_validation($value)
         {
@@ -34719,6 +37020,38 @@ namespace Gravity_Forms\Gravity_Forms\Settings\Fields {
          * @return string
          */
         public function markup()
+        {
+        }
+    }
+    class User_Select extends \Gravity_Forms\Gravity_Forms\Settings\Fields\Select
+    {
+        /**
+         * Field type.
+         *
+         * @since 2.9.5
+         *
+         * @var string
+         */
+        public $type = 'user_select';
+        // # RENDER METHODS ------------------------------------------------------------------------------------------------
+        /**
+         * Render field.
+         *
+         * @since 2.9.5
+         *
+         * @return string
+         */
+        public function markup()
+        {
+        }
+        /**
+         * Get the label for the dropdown.
+         *
+         * @since 2.9.5
+         *
+         * @return string
+         */
+        public function get_dropdown_label()
         {
         }
     }
@@ -34920,6 +37253,7 @@ namespace Gravity_Forms\Gravity_Forms\Setup_Wizard\Endpoints {
          * @since 2.7
          *
          * @return void
+         * @phpstan-return never
          */
         public function handle()
         {
@@ -35135,6 +37469,7 @@ namespace Gravity_Forms\Gravity_Forms\Splash_Page {
          * Enqueue splash page styles.
          *
          * @since 2.6
+         * @phpstan-return void
          */
         public function splash_page_styles()
         {
@@ -35173,6 +37508,7 @@ namespace Gravity_Forms\Gravity_Forms\Splash_Page {
          * @param $version
          * @param $from_db_version
          * @param $force_upgrade
+         * @phpstan-return void
          */
         public function set_upgrade_transient($version, $from_db_version, $force_upgrade)
         {
@@ -35770,7 +38106,7 @@ namespace Gravity_Forms\Gravity_Forms\Telemetry {
     /**
      * GF_Telemetry_Processor Class.
      */
-    class GF_Telemetry_Processor extends \GF_Background_Process
+    class GF_Telemetry_Processor extends \Gravity_Forms\Gravity_Forms\Async\GF_Background_Process
     {
         /**
          * @var string
@@ -35827,6 +38163,7 @@ namespace Gravity_Forms\Gravity_Forms\Telemetry {
          * @since
          *
          * @return void
+         * @phpstan-return void
          */
         public function enqueue_telemetry_batches()
         {
@@ -36090,6 +38427,7 @@ namespace Gravity_Forms\Gravity_Forms\Template_Library\Endpoints {
          * @since 2.7
          *
          * @return void
+         * @phpstan-return never
          */
         public function handle()
         {
@@ -36506,7 +38844,7 @@ namespace Gravity_Forms\Gravity_Forms\Theme_Layers\Framework\Traits {
          *
          * @return array
          */
-        public abstract function settings_fields();
+        abstract public function settings_fields();
         /**
          * Add the engine.
          *
@@ -36527,7 +38865,7 @@ namespace Gravity_Forms\Gravity_Forms\Theme_Layers\Framework\Traits {
          *
          * @return array
          */
-        public abstract function block_settings();
+        abstract public function block_settings();
         /**
          * Add the engine.
          *
@@ -36548,7 +38886,7 @@ namespace Gravity_Forms\Gravity_Forms\Theme_Layers\Framework\Traits {
          *
          * @return array
          */
-        public abstract function overriden_fields();
+        abstract public function overriden_fields();
         /**
          * Add the engine.
          *
@@ -36576,7 +38914,7 @@ namespace Gravity_Forms\Gravity_Forms\Theme_Layers\Framework\Traits {
          *
          * @return array
          */
-        public abstract function form_css_properties($form_id);
+        abstract public function form_css_properties($form_id);
         /**
          * Add the engine.
          *
@@ -36602,7 +38940,7 @@ namespace Gravity_Forms\Gravity_Forms\Theme_Layers\Framework\Traits {
          *
          * @return array
          */
-        public abstract function scripts($form, $ajax, $settings, $block_settings = array());
+        abstract public function scripts($form, $ajax, $settings, $block_settings = array());
         /**
          * Provides an array of styles to be enqueued for the form.
          *
@@ -36615,7 +38953,7 @@ namespace Gravity_Forms\Gravity_Forms\Theme_Layers\Framework\Traits {
          *
          * @return array
          */
-        public abstract function styles($form, $ajax, $settings, $block_settings = array());
+        abstract public function styles($form, $ajax, $settings, $block_settings = array());
         /**
          * Add the engine.
          *
@@ -37107,7 +39445,7 @@ namespace Gravity_Forms\Gravity_Forms\Theme_Layers\Framework\Engines\Definition_
          *
          * @return array
          */
-        public abstract function get_definitions();
+        abstract public function get_definitions();
         /**
          * Getter for type.
          *
@@ -37220,7 +39558,7 @@ namespace Gravity_Forms\Gravity_Forms\Theme_Layers\Framework\Engines\Output_Engi
          *
          * @return void
          */
-        public abstract function output();
+        abstract public function output();
         /**
          * Getter for type.
          *
@@ -37635,6 +39973,7 @@ namespace Gravity_Forms\Gravity_Forms\Updates {
          * @param string $option    The name of the option.
          * @param array  $value     The current value of the option.
          * @param array  $old_value The previous value of the option.
+         * @phpstan-return void
          */
         public function wp_option_updated($option, $value, $old_value = array())
         {
@@ -37669,6 +40008,7 @@ namespace Gravity_Forms\Gravity_Forms\Updates {
          * @param mixed $value     The current value of the option.
          *
          * @return void
+         * @phpstan-return void
          */
         public function gf_option_updated($old_value, $value)
         {
@@ -37749,6 +40089,7 @@ namespace Gravity_Forms\Gravity_Forms\Updates {
          * @since 2.7.2
          *
          * @return void
+         * @phpstan-return void
          */
         public function activation_sync()
         {
@@ -37790,7 +40131,19 @@ namespace {
         public static function upload()
         {
         }
-        public static function die_error($status_code, $message)
+        /**
+         * Ends the request with an error response.
+         *
+         * @since unknown
+         * @since 2.9.20 Made the params optional.
+         *
+         * @param int|string $status_code The status code. Optional. Defaults to 400.
+         * @param string     $message     The error message. Optional. Defaults to 'Invalid request.'.
+         *
+         * @return void
+         * @phpstan-return never
+         */
+        public static function die_error($status_code = 400, $message = '')
         {
         }
     }
@@ -38222,6 +40575,7 @@ namespace {
          * GF_Results_Cache constructor.
          *
          * @since 2.4-beta-1
+         * @phpstan-return void
          */
         public function __construct()
         {
@@ -38292,6 +40646,7 @@ namespace {
          *
          * @param $form
          * @param $is_new
+         * @phpstan-return void
          */
         public function after_save_form($form, $is_new)
         {
@@ -38607,7 +40962,7 @@ namespace {
          *
          * @var string
          */
-        public $rest_base = 'forms/(?P<form_id>[\\d]+)/entries';
+        public $rest_base = 'forms/(?P<form_id>[\d]+)/entries';
         /**
          * Register the routes for the objects of the controller.
          *
@@ -38878,7 +41233,7 @@ namespace {
         /**
          * @var string Base for the REST request.
          */
-        public $rest_base = 'entries/(?P<entry_id>[\\d]+)/notes';
+        public $rest_base = 'entries/(?P<entry_id>[\d]+)/notes';
         /**
          * Register the routes for the objects of the controller.
          */
@@ -39014,7 +41369,7 @@ namespace {
          *
          * @var string
          */
-        public $rest_base = 'entries/(?P<entry_id>[\\d]+)/notifications';
+        public $rest_base = 'entries/(?P<entry_id>[\d]+)/notifications';
         /**
          * Register the routes for the objects of the controller.
          *
@@ -39067,7 +41422,7 @@ namespace {
          *
          * @var string
          */
-        public $rest_base = 'entries/(?P<entry_id>[\\d]+)/properties';
+        public $rest_base = 'entries/(?P<entry_id>[\d]+)/properties';
         /**
          * Register the routes for the objects of the controller.
          *
@@ -39142,7 +41497,7 @@ namespace {
          *
          * @var string
          */
-        public $rest_base = 'forms/(?P<form_id>[\\d]+)/feeds';
+        public $rest_base = 'forms/(?P<form_id>[\d]+)/feeds';
         /**
          * Register the routes for the objects of the controller.
          *
@@ -39431,7 +41786,7 @@ namespace {
          *
          * @var string
          */
-        public $rest_base = 'feeds/(?P<feed_id>[\\d]+)/properties';
+        public $rest_base = 'feeds/(?P<feed_id>[\d]+)/properties';
         /**
          * Register the routes for the objects of the controller.
          *
@@ -39494,7 +41849,7 @@ namespace {
          *
          * @var string
          */
-        public $rest_base = 'forms/(?P<form_id>[\\d]+)/field-filters';
+        public $rest_base = 'forms/(?P<form_id>[\d]+)/field-filters';
         /**
          * Register the routes for the objects of the controller.
          *
@@ -39545,7 +41900,7 @@ namespace {
          *
          * @var string
          */
-        public $rest_base = 'forms/(?P<form_id>[\\d]+)/results';
+        public $rest_base = 'forms/(?P<form_id>[\d]+)/results';
         /**
          * Register the routes for the objects of the controller.
          *
@@ -39611,7 +41966,7 @@ namespace {
          *
          * @var string
          */
-        public $rest_base = 'forms/(?P<form_id>[\\d]+)/submissions/validation';
+        public $rest_base = 'forms/(?P<form_id>[\d]+)/submissions/validation';
         /**
          * Registers the route.
          *
@@ -39665,7 +42020,7 @@ namespace {
          *
          * @var string
          */
-        public $rest_base = 'forms/(?P<form_id>[\\d]+)/submissions';
+        public $rest_base = 'forms/(?P<form_id>[\d]+)/submissions';
         /**
          * Register the routes for the objects of the controller.
          *
@@ -40320,6 +42675,7 @@ namespace {
          * Deletes a REST API key from an AJAX request.
          *
          * @since Unknown
+         * @phpstan-return never
          */
         public function ajax_delete_key()
         {
@@ -40328,6 +42684,7 @@ namespace {
          * Handle edit key related AJAX requests.
          *
          * @since 2.5
+         * @phpstan-return never
          */
         public function ajax_edit_key()
         {
@@ -40959,6 +43316,7 @@ namespace {
          * @uses    GFCommon::add_error_message()
          *
          * @return void
+         * @phpstan-return void
          */
         public static function maybe_process_notification_list_action()
         {
@@ -41020,6 +43378,7 @@ namespace {
          *
          * @since  Unknown
          * @access public
+         * @phpstan-return never
          */
         public static function get_post_category_values()
         {
@@ -41235,6 +43594,7 @@ namespace {
          * @param array $item The column data.
          *
          * @return void
+         * @phpstan-return void
          */
         function column_cb($item)
         {
@@ -41299,6 +43659,7 @@ namespace {
          * @since 2.5
          *
          * @param string $which
+         * @phpstan-return void
          */
         protected function extra_tablenav($which)
         {
@@ -41410,6 +43771,7 @@ namespace {
          * @uses    GFFormsModel::get_upload_root()
          * @uses    GFCommon::current_user_can_any()
          * @uses    GFSettings::page_footer()
+         * @phpstan-return void
          */
         public static function settings_uninstall_page()
         {
@@ -41421,6 +43783,7 @@ namespace {
          * @since  Unknown
          * @access public
          * @global $wpdb
+         * @phpstan-return void
          */
         public static function gravityforms_settings_page()
         {
@@ -41473,6 +43836,7 @@ namespace {
          * @param mixed  $value The current posted field value.
          *
          * @return void
+         * @phpstan-return void
          */
         public static function license_key_validation_callback($field, $value)
         {
@@ -41516,6 +43880,7 @@ namespace {
          * @uses GFCommon::post_to_manager()
          *
          * @return void
+         * @phpstan-return never
          */
         public static function upgrade_license()
         {
@@ -41810,6 +44175,7 @@ namespace {
      * @param array  $array The array to search through.  If null, checks query strings.  Defaults to null.
      *
      * @return string The value.  If none found, empty string.
+     * @phpstan-return string|list<string>
      */
     function rgget($name, $array = \null)
     {
@@ -41823,6 +44189,7 @@ namespace {
      * @param bool   $do_stripslashes Optional. Performs stripslashes_deep.  Defaults to true.
      *
      * @return string The value.  If none found, empty string.
+     * @phpstan-return string|list<string>
      */
     function rgpost($name, $do_stripslashes = \true)
     {
@@ -41840,6 +44207,8 @@ namespace {
      * @param string $default Optional. Value that should be returned if the property is not set or empty. Defaults to null.
      *
      * @return null|string|mixed The value
+     * @phpstan-param mixed $default
+     * @phpstan-return mixed
      */
     function rgar($array, $prop, $default = \null)
     {
@@ -41855,6 +44224,8 @@ namespace {
      * @param string $default Optional. Value that should be returned if the property is not set or empty. Defaults to null.
      *
      * @return null|string|mixed The value
+     * @phpstan-param mixed $default
+     * @phpstan-return mixed
      */
     function rgars($array, $name, $default = \null)
     {
@@ -41865,8 +44236,8 @@ namespace {
      * @since  Unknown
      * @access public
      *
-     * @param string $name The property name to check.
-     * @param array $array Optional. An array to check through.  Otherwise, checks for POST variables.
+     * @param string|array $name  The property name or array to check.
+     * @param array        $array Optional. An array to check through. Otherwise, checks for POST variables.
      *
      * @return bool True if empty.  False otherwise.
      */
