@@ -44175,7 +44175,7 @@ namespace {
      * @param array  $array The array to search through.  If null, checks query strings.  Defaults to null.
      *
      * @return string The value.  If none found, empty string.
-     * @phpstan-return string|list<string>
+     * @phpstan-return string|array
      */
     function rgget($name, $array = \null)
     {
@@ -44189,7 +44189,7 @@ namespace {
      * @param bool   $do_stripslashes Optional. Performs stripslashes_deep.  Defaults to true.
      *
      * @return string The value.  If none found, empty string.
-     * @phpstan-return string|list<string>
+     * @phpstan-return string|array
      */
     function rgpost($name, $do_stripslashes = \true)
     {

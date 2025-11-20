@@ -10,6 +10,6 @@
 return [
     'rgar' => ['mixed', 'default' => 'mixed'],
     'rgars' => ['mixed', 'default' => 'mixed'],
-    'rgget' => ['string|list<string>'],
-    'rgpost' => ['string|list<string>'],
+    'rgget' => ['string|array'],
+    'rgpost' => ['string|array'],
 ];
